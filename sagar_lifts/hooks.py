@@ -86,7 +86,11 @@ app_license = "mit"
 # ------------
 
 # before_install = "sagar_lifts.install.before_install"
-# after_install = "sagar_lifts.install.after_install"
+after_install = [
+	"sagar_lifts.sagar_lifts.setup.roles.after_install",
+	"sagar_lifts.sagar_lifts.setup.sales_order.setup_sales_order_customization",
+	"sagar_lifts.sagar_lifts.setup.job_id.setup_job_id_links",
+]
 
 # Uninstallation
 # ------------
@@ -145,6 +149,12 @@ app_license = "mit"
 # 		"on_trash": "method"
 # 	}
 # }
+
+doc_events = {
+	"Sales Order": {
+		"validate": "sagar_lifts.sagar_lifts.doc_events.sales_order_set_job_number",
+	}
+}
 
 # Scheduled Tasks
 # ---------------
