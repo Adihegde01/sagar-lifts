@@ -8,32 +8,48 @@ traced back to one job.
 from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 
 
-def _job_id_field(insert_after):
+def _job_id_field(insert_after, reqd=0):
 	return {
 		"fieldname": "job_id",
 		"label": "Job ID",
 		"fieldtype": "Link",
 		"options": "Sales Order",
+		"reqd": reqd,
 		"insert_after": insert_after,
 		"in_standard_filter": 1,
 		"description": "The deployment's lifelong identifier — its originating Sales Order (Job Number)",
 	}
 
 
-def _job_name_field():
+def _job_number_field(insert_after="job_id"):
+	return {
+		"fieldname": "job_number",
+		"label": "Job Number",
+		"fieldtype": "Data",
+		"fetch_from": "job_id.job_number",
+		"read_only": 1,
+		"insert_after": insert_after,
+	}
+
+
+def _job_name_field(insert_after="job_id"):
 	return {
 		"fieldname": "job_name",
 		"label": "Job Name",
 		"fieldtype": "Data",
 		"fetch_from": "job_id.job_name",
 		"read_only": 1,
-		"insert_after": "job_id",
+		"insert_after": insert_after,
 		"description": "Fetched from the Job — keeps the deployment identifiable end to end",
 	}
 
 
 CUSTOM_FIELDS = {
-	"Delivery Note": [_job_id_field("customer_name"), _job_name_field()],
+	"Delivery Note": [
+		_job_id_field("customer_name", reqd=1),
+		_job_number_field(),
+		_job_name_field(insert_after="job_number"),
+	],
 	"Sales Invoice": [_job_id_field("customer_name"), _job_name_field()],
 	"Maintenance Visit": [_job_id_field("customer_name"), _job_name_field()],
 	"Contract": [_job_id_field("party_full_name")],
