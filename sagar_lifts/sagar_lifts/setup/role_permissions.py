@@ -30,7 +30,16 @@ CORE_DOCTYPE_GRID = {
 		"SL Billing": dict(read=1, write=1, create=1, submit=1),
 		"SL Manufacturing": dict(read=1, write=1, create=1, submit=1),
 		"SL Stores": dict(read=1),
-		"SL Dispatch": dict(read=1),
+		# write=1 and submit=1 are required here even though the guide's own
+		# grid prints Edit=No/Submit=No: SL Dispatch is the sole allowed role
+		# on 2 workflow transitions (Mark Dispatched, Signed Challan
+		# Received). Completing a transition on an already-submitted order
+		# calls doc.save(), which Frappe treats as "update_after_submit" and
+		# checks the Submit permission (not just Write) regardless of the
+		# workflow's own "allow_edit"/transition "allowed" roles. Without
+		# this, SL Dispatch can never move the order out of Active at all —
+		# confirmed by live-testing the workflow end to end.
+		"SL Dispatch": dict(read=1, write=1, submit=1),
 		"SL Service Manager": dict(read=1),
 	},
 	"Delivery Note": {
