@@ -90,6 +90,7 @@ after_install = [
 	"sagar_lifts.sagar_lifts.setup.roles.after_install",
 	"sagar_lifts.sagar_lifts.setup.sales_order.setup_sales_order_customization",
 	"sagar_lifts.sagar_lifts.setup.job_id.setup_job_id_links",
+	"sagar_lifts.sagar_lifts.setup.maintenance_visit.setup_maintenance_visit_customization",
 ]
 
 # Uninstallation

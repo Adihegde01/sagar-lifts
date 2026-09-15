@@ -35,7 +35,7 @@ def _job_name_field():
 CUSTOM_FIELDS = {
 	"Delivery Note": [_job_id_field("customer_name"), _job_name_field()],
 	"Sales Invoice": [_job_id_field("customer_name"), _job_name_field()],
-	"Maintenance Visit": [_job_id_field("customer_name"), _job_name_field()],
+	# Maintenance Visit owns its own job_id/job_number/job_name — see setup/maintenance_visit.py
 	"Contract": [_job_id_field("party_full_name")],
 	# Purchase Invoice: Job ID only on a contractor bill, never a routine supplier bill.
 	"Purchase Invoice": [
