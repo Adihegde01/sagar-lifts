@@ -1,5 +1,8 @@
 """Runtime doc_events for Sagar Lifts (wired in hooks.py)."""
 
+import frappe
+from frappe import _
+
 from sagar_lifts.sagar_lifts.amc_calendar import get_pm_month, get_quarter
 
 
@@ -8,6 +11,14 @@ def sales_order_set_job_number(doc, method=None):
 	# editable — only fill when blank. autoname has already run by validate.
 	if not doc.job_number and doc.name:
 		doc.job_number = doc.name
+
+
+def sales_order_validate_contract_value(doc, method=None):
+	# "Contract Value" (No-Code Guide 9.1) is the order's own grand total —
+	# no separate field, so it can never drift from the actual line items.
+	# Required + non-zero, same as any other mandatory field.
+	if not doc.grand_total:
+		frappe.throw(_("Contract Value (the order total) cannot be zero"))
 
 
 def maintenance_visit_set_quarter(doc, method=None):

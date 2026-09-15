@@ -96,6 +96,7 @@ after_install = [
 	"sagar_lifts.sagar_lifts.setup.sales_invoice.setup_sales_invoice_customization",
 	"sagar_lifts.sagar_lifts.setup.deployment_workflow.setup_deployment_workflow",
 	"sagar_lifts.sagar_lifts.setup.role_permissions.setup_role_permissions",
+	"sagar_lifts.sagar_lifts.setup.naming_series.setup_naming_series",
 ]
 
 # Uninstallation
@@ -158,7 +159,10 @@ after_install = [
 
 doc_events = {
 	"Sales Order": {
-		"validate": "sagar_lifts.sagar_lifts.doc_events.sales_order_set_job_number",
+		"validate": [
+			"sagar_lifts.sagar_lifts.doc_events.sales_order_set_job_number",
+			"sagar_lifts.sagar_lifts.doc_events.sales_order_validate_contract_value",
+		],
 	},
 	"Maintenance Visit": {
 		"validate": "sagar_lifts.sagar_lifts.doc_events.maintenance_visit_set_quarter",

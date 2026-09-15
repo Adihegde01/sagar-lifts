@@ -13,3 +13,4 @@ sagar_lifts.patches.v1_0.purchase_invoice_bill_fields
 sagar_lifts.patches.v1_0.sales_invoice_pi_type_fields
 sagar_lifts.patches.v1_0.deployment_workflow_states
 sagar_lifts.patches.v1_0.role_permissions
+sagar_lifts.patches.v1_0.naming_series
