@@ -238,12 +238,57 @@ CUSTOM_FIELDS = {
 			"description": "Auto-filled at handover: Handover Date + Free Maintenance Months",
 			"insert_after": "handover_date",
 		},
+		# --- Dismantling Checklist ---------------------------------------------
+		# Required only at Deployment Status = Dismantled; wired into the
+		# AMC -> Dismantled workflow transition condition.
+		{
+			"fieldname": "sl_dismantling_checklist_section",
+			"label": "Dismantling Checklist",
+			"fieldtype": "Section Break",
+			"insert_after": "amc_start_date",
+		},
+		{
+			"fieldname": "dismantle_instruction_received",
+			"label": "Dismantle Instruction Received",
+			"fieldtype": "Check",
+			"mandatory_depends_on": 'eval:doc.deployment_status=="Dismantled"',
+			"description": "The formal developer instruction, logged before anything else proceeds",
+			"insert_after": "sl_dismantling_checklist_section",
+		},
+		{
+			"fieldname": "all_amc_billing_raised",
+			"label": "All AMC Billing Raised",
+			"fieldtype": "Check",
+			"mandatory_depends_on": 'eval:doc.deployment_status=="Dismantled"',
+			"description": "Every unbilled AMC amount, even a part-quarter, must have a PI raised",
+			"insert_after": "dismantle_instruction_received",
+		},
+		{
+			"fieldname": "sl_dismantling_checklist_col",
+			"fieldtype": "Column Break",
+			"insert_after": "all_amc_billing_raised",
+		},
+		{
+			"fieldname": "final_pm_visit_logged",
+			"label": "Final PM Visit Logged",
+			"fieldtype": "Check",
+			"mandatory_depends_on": 'eval:doc.deployment_status=="Dismantled"',
+			"description": "Linked to the last Maintenance Visit on this lift",
+			"insert_after": "sl_dismantling_checklist_col",
+		},
+		{
+			"fieldname": "dismantling_billing_trigger_created",
+			"label": "Dismantling Billing Trigger Created",
+			"fieldtype": "Check",
+			"mandatory_depends_on": 'eval:doc.deployment_status=="Dismantled"',
+			"insert_after": "final_pm_visit_logged",
+		},
 		# --- Fleet & Billing -------------------------------------------------
 		{
 			"fieldname": "sl_fleet_section",
 			"label": "Fleet & Billing",
 			"fieldtype": "Section Break",
-			"insert_after": "amc_start_date",
+			"insert_after": "dismantling_billing_trigger_created",
 		},
 		{
 			"fieldname": "lift_status",

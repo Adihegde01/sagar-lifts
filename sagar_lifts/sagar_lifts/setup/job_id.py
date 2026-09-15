@@ -50,28 +50,10 @@ CUSTOM_FIELDS = {
 		_job_number_field(),
 		_job_name_field(insert_after="job_number"),
 	],
-	"Sales Invoice": [_job_id_field("customer_name"), _job_name_field()],
-	# Maintenance Visit owns its own job_id/job_number/job_name — see setup/maintenance_visit.py
+	# Maintenance Visit, Purchase Invoice and Sales Invoice own their own
+	# job_id/job_number/job_name — see setup/maintenance_visit.py,
+	# setup/purchase_invoice.py and setup/sales_invoice.py
 	"Contract": [_job_id_field("party_full_name")],
-	# Purchase Invoice: Job ID only on a contractor bill, never a routine supplier bill.
-	"Purchase Invoice": [
-		{
-			"fieldname": "is_contractor_bill",
-			"label": "Contractor Bill",
-			"fieldtype": "Check",
-			"insert_after": "supplier_name",
-			"description": "Tick for a contractor bill against a job — not for routine supplier bills",
-		},
-		{
-			**_job_id_field("is_contractor_bill"),
-			"depends_on": "eval:doc.is_contractor_bill",
-			"mandatory_depends_on": "eval:doc.is_contractor_bill",
-		},
-		{
-			**_job_name_field(),
-			"depends_on": "eval:doc.is_contractor_bill",
-		},
-	],
 }
 
 
