@@ -78,6 +78,38 @@ PERMLEVEL_1_GRID = {
 	},
 }
 
+ALL_SL_ROLES = [
+	"SL Admin",
+	"SL Management",
+	"SL Collection Lead",
+	"SL Billing",
+	"SL Manufacturing",
+	"SL Stores",
+	"SL Dispatch",
+	"SL Service Manager",
+	"SL Technician",
+]
+
+# Baseline Read on Customer/Item for every SL role. Not in the guide's own
+# grid, but required infrastructure, not a business-rule choice: ERPNext's
+# own controllers (e.g. fetching party details) call
+# frappe.has_permission("Customer", ...) while validating a new Sales
+# Order/Delivery Note/Sales Invoice/Maintenance Visit — without this every
+# non-admin role is blocked from creating any of those at all. Confirmed
+# live: SL Stores creating a Delivery Note threw a bare PermissionError from
+# erpnext/accounts/party.py, not from anything in this app's own grids.
+# SL Collection Lead's "own developer accounts only" narrows this via a
+# separate per-user User Permission on Customer (Phase 1) — that restricts
+# rows, it doesn't need write here at all.
+BASELINE_MASTER_GRID = {
+	"Customer": {role: dict(read=1) for role in ALL_SL_ROLES},
+	"Item": {role: dict(read=1) for role in ALL_SL_ROLES},
+	# Also needed to create/save any selling document at all — ERPNext
+	# resolves the customer's receivable account (party_account_currency)
+	# during validate and throws PermissionError without Account read.
+	"Account": {role: dict(read=1) for role in ALL_SL_ROLES},
+}
+
 _PERM_FIELDS = ("read", "write", "create", "delete", "submit", "cancel", "if_owner")
 
 
@@ -105,3 +137,7 @@ def setup_role_permissions():
 	for doctype, roles in PERMLEVEL_1_GRID.items():
 		for role, values in roles.items():
 			_upsert(doctype, role, 1, values)
+
+	for doctype, roles in BASELINE_MASTER_GRID.items():
+		for role, values in roles.items():
+			_upsert(doctype, role, 0, values)
