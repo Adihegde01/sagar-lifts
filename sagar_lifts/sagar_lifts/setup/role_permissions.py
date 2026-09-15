@@ -23,6 +23,14 @@ import frappe
 from frappe.permissions import setup_custom_perms
 
 CORE_DOCTYPE_GRID = {
+	# Not one of the guide's four core doctypes, but Purchase Order needs at
+	# least this to be usable at all — Section 8.2: Stores raises the PO,
+	# Stores Manager (also SL Stores) approves it; SL Admin has full access.
+	"Purchase Order": {
+		"SL Admin": dict(read=1, write=1, create=1, delete=1, submit=1, cancel=1),
+		"SL Stores": dict(read=1, write=1, create=1, submit=1),
+		"SL Manufacturing": dict(read=1),
+	},
 	"Sales Order": {
 		"SL Admin": dict(read=1, write=1, create=1, delete=1, submit=1, cancel=1),
 		"SL Management": dict(read=1, write=1),
@@ -108,6 +116,9 @@ BASELINE_MASTER_GRID = {
 	# resolves the customer's receivable account (party_account_currency)
 	# during validate and throws PermissionError without Account read.
 	"Account": {role: dict(read=1) for role in ALL_SL_ROLES},
+	# Same class of gap on the buying side — Purchase Order/Purchase Invoice
+	# resolve the supplier's payable account the same way.
+	"Supplier": {role: dict(read=1) for role in ALL_SL_ROLES},
 }
 
 _PERM_FIELDS = ("read", "write", "create", "delete", "submit", "cancel", "if_owner")

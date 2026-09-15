@@ -10,6 +10,7 @@ sagar_lifts.patches.v1_0.job_id_links
 sagar_lifts.patches.v1_0.delivery_note_challan_fields
 sagar_lifts.patches.v1_0.maintenance_visit_pm_fields
 sagar_lifts.patches.v1_0.purchase_invoice_bill_fields
+sagar_lifts.patches.v1_0.purchase_order_bill_fields
 sagar_lifts.patches.v1_0.sales_invoice_pi_type_fields
 sagar_lifts.patches.v1_0.deployment_workflow_states
 sagar_lifts.patches.v1_0.role_permissions

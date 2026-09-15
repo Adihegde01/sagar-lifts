@@ -93,6 +93,7 @@ after_install = [
 	"sagar_lifts.sagar_lifts.setup.delivery_note.setup_delivery_note_customization",
 	"sagar_lifts.sagar_lifts.setup.maintenance_visit.setup_maintenance_visit_customization",
 	"sagar_lifts.sagar_lifts.setup.purchase_invoice.setup_purchase_invoice_customization",
+	"sagar_lifts.sagar_lifts.setup.purchase_order.setup_purchase_order_customization",
 	"sagar_lifts.sagar_lifts.setup.sales_invoice.setup_sales_invoice_customization",
 	"sagar_lifts.sagar_lifts.setup.deployment_workflow.setup_deployment_workflow",
 	"sagar_lifts.sagar_lifts.setup.role_permissions.setup_role_permissions",
