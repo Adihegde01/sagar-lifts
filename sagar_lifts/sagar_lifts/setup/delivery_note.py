@@ -78,6 +78,7 @@ CUSTOM_FIELDS = {
 			"fieldname": "signed_challan_received",
 			"label": "Signed Challan Received",
 			"fieldtype": "Check",
+			"allow_on_submit": 1,
 			"description": "Dispatch ticks this when the signed copy returns from site",
 			"insert_after": "sl_signed_challan_section",
 		},
@@ -85,6 +86,7 @@ CUSTOM_FIELDS = {
 			"fieldname": "signed_challan_date",
 			"label": "Signed Challan Date",
 			"fieldtype": "Date",
+			"allow_on_submit": 1,
 			"insert_after": "signed_challan_received",
 		},
 		{
@@ -96,6 +98,7 @@ CUSTOM_FIELDS = {
 			"fieldname": "signed_by_at_site",
 			"label": "Signed By at Site",
 			"fieldtype": "Data",
+			"allow_on_submit": 1,
 			"insert_after": "sl_signed_challan_col",
 		},
 		{

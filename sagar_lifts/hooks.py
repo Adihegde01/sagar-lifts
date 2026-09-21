@@ -91,7 +91,13 @@ after_install = [
 	"sagar_lifts.sagar_lifts.setup.sales_order.setup_sales_order_customization",
 	"sagar_lifts.sagar_lifts.setup.job_id.setup_job_id_links",
 	"sagar_lifts.sagar_lifts.setup.delivery_note.setup_delivery_note_customization",
+	"sagar_lifts.sagar_lifts.setup.maintenance_visit.setup_maintenance_visit_customization",
 	"sagar_lifts.sagar_lifts.setup.purchase_invoice.setup_purchase_invoice_customization",
+	"sagar_lifts.sagar_lifts.setup.purchase_order.setup_purchase_order_customization",
+	"sagar_lifts.sagar_lifts.setup.sales_invoice.setup_sales_invoice_customization",
+	"sagar_lifts.sagar_lifts.setup.deployment_workflow.setup_deployment_workflow",
+	"sagar_lifts.sagar_lifts.setup.role_permissions.setup_role_permissions",
+	"sagar_lifts.sagar_lifts.setup.naming_series.setup_naming_series",
 	"sagar_lifts.sagar_lifts.setup.notifications.setup_notifications",
 ]
 
@@ -155,33 +161,27 @@ after_install = [
 
 doc_events = {
 	"Sales Order": {
-		"validate": "sagar_lifts.sagar_lifts.doc_events.sales_order_set_job_number",
+		"validate": [
+			"sagar_lifts.sagar_lifts.doc_events.sales_order_set_job_number",
+			"sagar_lifts.sagar_lifts.doc_events.sales_order_validate_contract_value",
+		],
 	},
 	"Purchase Invoice": {
 		"validate": "sagar_lifts.sagar_lifts.doc_events.purchase_invoice_set_manufacturing_approval",
+	},
+	"Maintenance Visit": {
+		"validate": "sagar_lifts.sagar_lifts.doc_events.maintenance_visit_set_quarter",
 	},
 }
 
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"sagar_lifts.tasks.all"
-# 	],
-# 	"daily": [
-# 		"sagar_lifts.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"sagar_lifts.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"sagar_lifts.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"sagar_lifts.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+	"daily": [
+		"sagar_lifts.sagar_lifts.tasks.flag_overdue_amc_billing",
+	],
+}
 
 # Testing
 # -------

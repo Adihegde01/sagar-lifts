@@ -145,7 +145,7 @@ NOTIFICATIONS = [
 		"document_type": "Purchase Invoice",
 		"event": "Value Change",
 		"value_changed": "approved_by_manufacturing",
-		"condition": "doc.is_contractor_bill and doc.approved_by_manufacturing == 1",
+		"condition": "doc.bill_type == 'Contractor' and doc.approved_by_manufacturing == 1",
 		"subject": "Contractor Bill Approved — Process Payment",
 		"recipients": [_role("SL Billing")],
 	},
