@@ -91,6 +91,8 @@ after_install = [
 	"sagar_lifts.sagar_lifts.setup.sales_order.setup_sales_order_customization",
 	"sagar_lifts.sagar_lifts.setup.job_id.setup_job_id_links",
 	"sagar_lifts.sagar_lifts.setup.delivery_note.setup_delivery_note_customization",
+	"sagar_lifts.sagar_lifts.setup.purchase_invoice.setup_purchase_invoice_customization",
+	"sagar_lifts.sagar_lifts.setup.notifications.setup_notifications",
 ]
 
 # Uninstallation
@@ -154,7 +156,10 @@ after_install = [
 doc_events = {
 	"Sales Order": {
 		"validate": "sagar_lifts.sagar_lifts.doc_events.sales_order_set_job_number",
-	}
+	},
+	"Purchase Invoice": {
+		"validate": "sagar_lifts.sagar_lifts.doc_events.purchase_invoice_set_manufacturing_approval",
+	},
 }
 
 # Scheduled Tasks

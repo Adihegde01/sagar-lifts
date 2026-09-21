@@ -8,3 +8,4 @@ sagar_lifts.patches.v1_0.create_sl_roles
 sagar_lifts.patches.v1_0.sales_order_lift_fields
 sagar_lifts.patches.v1_0.job_id_links
 sagar_lifts.patches.v1_0.delivery_note_challan_fields
+sagar_lifts.patches.v1_0.notification_specification

@@ -50,7 +50,20 @@ CUSTOM_FIELDS = {
 		_job_number_field(),
 		_job_name_field(insert_after="job_number"),
 	],
-	"Sales Invoice": [_job_id_field("customer_name"), _job_name_field()],
+	"Sales Invoice": [
+		_job_id_field("customer_name"),
+		_job_name_field(),
+		{
+			"fieldname": "collection_lead",
+			"label": "Collection Lead",
+			"fieldtype": "Link",
+			"options": "User",
+			"fetch_from": "job_id.collection_lead",
+			"read_only": 1,
+			"insert_after": "job_name",
+			"description": "Fetched from the Job — the escalation ladder routes reminders to this user",
+		},
+	],
 	"Maintenance Visit": [_job_id_field("customer_name"), _job_name_field()],
 	"Contract": [_job_id_field("party_full_name")],
 	# Purchase Invoice: Job ID only on a contractor bill, never a routine supplier bill.
