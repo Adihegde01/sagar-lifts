@@ -103,6 +103,7 @@ after_install = [
 	"sagar_lifts.sagar_lifts.setup.dashboards.setup_dashboards",
 	"sagar_lifts.sagar_lifts.setup.client_scripts.setup_client_scripts",
 	"sagar_lifts.sagar_lifts.setup.workspaces.setup_workspaces",
+	"sagar_lifts.sagar_lifts.setup.notifications.setup_notifications",
 ]
 
 # Uninstallation
@@ -189,6 +190,9 @@ doc_events = {
 			"sagar_lifts.sagar_lifts.doc_events.sales_order_create_project",
 			"sagar_lifts.sagar_lifts.doc_events.sales_order_create_bom_skeleton",
 		],
+	},
+	"Purchase Invoice": {
+		"validate": "sagar_lifts.sagar_lifts.doc_events.purchase_invoice_set_manufacturing_approval",
 	},
 	"Maintenance Visit": {
 		"validate": [

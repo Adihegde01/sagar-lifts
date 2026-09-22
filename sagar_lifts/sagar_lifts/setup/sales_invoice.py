@@ -44,6 +44,16 @@ CUSTOM_FIELDS = {
 			"read_only": 1,
 			"insert_after": "job_number",
 		},
+		{
+			"fieldname": "collection_lead",
+			"label": "Collection Lead",
+			"fieldtype": "Link",
+			"options": "User",
+			"fetch_from": "job_id.collection_lead",
+			"read_only": 1,
+			"insert_after": "job_name",
+			"description": "Fetched from the Job — the escalation ladder routes reminders to this user",
+		},
 	]
 }
 

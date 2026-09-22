@@ -2,7 +2,7 @@
 
 import frappe
 from frappe import _
-from frappe.utils import cint, flt, getdate
+from frappe.utils import cint, flt, getdate, today
 
 from sagar_lifts.sagar_lifts.amc_calendar import get_pm_month, get_quarter
 
@@ -191,3 +191,11 @@ def maintenance_visit_validate_technician(doc, method=None):
 				frappe.bold(doc.senior_technician)
 			)
 		)
+
+
+def purchase_invoice_set_manufacturing_approval(doc, method=None):
+	# Stamp who/when approved a contractor bill the first time it's ticked.
+	is_contractor_bill = doc.bill_type == "Contractor"
+	if is_contractor_bill and doc.approved_by_manufacturing and not doc.manufacturing_approval_by:
+		doc.manufacturing_approval_by = frappe.session.user
+		doc.manufacturing_approval_date = today()

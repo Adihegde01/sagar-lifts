@@ -20,3 +20,4 @@ sagar_lifts.patches.v1_0.po_approval_workflow
 sagar_lifts.patches.v1_0.dashboards
 sagar_lifts.patches.v1_0.client_scripts
 sagar_lifts.patches.v1_0.workspaces
+sagar_lifts.patches.v1_0.notification_specification
