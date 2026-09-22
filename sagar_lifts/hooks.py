@@ -96,8 +96,13 @@ after_install = [
 	"sagar_lifts.sagar_lifts.setup.purchase_order.setup_purchase_order_customization",
 	"sagar_lifts.sagar_lifts.setup.sales_invoice.setup_sales_invoice_customization",
 	"sagar_lifts.sagar_lifts.setup.deployment_workflow.setup_deployment_workflow",
+	"sagar_lifts.sagar_lifts.setup.po_approval_workflow.setup_po_approval_workflow",
 	"sagar_lifts.sagar_lifts.setup.role_permissions.setup_role_permissions",
 	"sagar_lifts.sagar_lifts.setup.naming_series.setup_naming_series",
+	"sagar_lifts.sagar_lifts.setup.customer.setup_customer_customization",
+	"sagar_lifts.sagar_lifts.setup.dashboards.setup_dashboards",
+	"sagar_lifts.sagar_lifts.setup.client_scripts.setup_client_scripts",
+	"sagar_lifts.sagar_lifts.setup.workspaces.setup_workspaces",
 ]
 
 # Uninstallation
@@ -162,11 +167,35 @@ doc_events = {
 	"Sales Order": {
 		"validate": [
 			"sagar_lifts.sagar_lifts.doc_events.sales_order_set_job_number",
+			"sagar_lifts.sagar_lifts.doc_events.sales_order_set_collection_lead",
+			"sagar_lifts.sagar_lifts.doc_events.sales_order_validate_same_collection_lead",
 			"sagar_lifts.sagar_lifts.doc_events.sales_order_validate_contract_value",
+			"sagar_lifts.sagar_lifts.doc_events.sales_order_validate_milestone_total",
+			"sagar_lifts.sagar_lifts.doc_events.sales_order_set_amc_start_date",
+			"sagar_lifts.sagar_lifts.doc_events.sales_order_propagate_outstanding_flag",
+		],
+		# Frappe only runs "validate" for the save/submit actions — editing a
+		# field on an *already-submitted* order (the normal case: Manufacturing
+		# fills Handover Date weeks after the order was submitted) goes through
+		# "update_after_submit" instead, which never calls "validate" at all.
+		# Without this, amc_start_date (and job_number, as a safety net) would
+		# never actually fill in during real use. Confirmed live — see commit.
+		"before_update_after_submit": [
+			"sagar_lifts.sagar_lifts.doc_events.sales_order_set_job_number",
+			"sagar_lifts.sagar_lifts.doc_events.sales_order_set_amc_start_date",
+			"sagar_lifts.sagar_lifts.doc_events.sales_order_propagate_outstanding_flag",
+		],
+		"on_submit": [
+			"sagar_lifts.sagar_lifts.doc_events.sales_order_create_project",
+			"sagar_lifts.sagar_lifts.doc_events.sales_order_create_bom_skeleton",
 		],
 	},
 	"Maintenance Visit": {
-		"validate": "sagar_lifts.sagar_lifts.doc_events.maintenance_visit_set_quarter",
+		"validate": [
+			"sagar_lifts.sagar_lifts.doc_events.maintenance_visit_set_quarter",
+			"sagar_lifts.sagar_lifts.doc_events.maintenance_visit_validate_date",
+			"sagar_lifts.sagar_lifts.doc_events.maintenance_visit_validate_technician",
+		],
 	},
 }
 
@@ -176,6 +205,7 @@ doc_events = {
 scheduler_events = {
 	"daily": [
 		"sagar_lifts.sagar_lifts.tasks.flag_overdue_amc_billing",
+		"sagar_lifts.sagar_lifts.tasks.flag_overdue_pm_visits",
 	],
 }
 

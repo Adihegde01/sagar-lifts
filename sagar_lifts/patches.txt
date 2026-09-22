@@ -15,3 +15,8 @@ sagar_lifts.patches.v1_0.sales_invoice_pi_type_fields
 sagar_lifts.patches.v1_0.deployment_workflow_states
 sagar_lifts.patches.v1_0.role_permissions
 sagar_lifts.patches.v1_0.naming_series
+sagar_lifts.patches.v1_0.customer_collection_lead
+sagar_lifts.patches.v1_0.po_approval_workflow
+sagar_lifts.patches.v1_0.dashboards
+sagar_lifts.patches.v1_0.client_scripts
+sagar_lifts.patches.v1_0.workspaces

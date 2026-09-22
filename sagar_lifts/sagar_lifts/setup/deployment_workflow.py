@@ -69,7 +69,12 @@ TRANSITIONS = [
 		"Installation",
 		"Handed Over",
 		"Confirm Handover",
-		"doc.handover_date",
+		# Real handover gate (No-Code Guide 4.1 MUST list), not just a date —
+		# On Delivery payment can be waived via management/admin override,
+		# same pattern as Dispatch Override.
+		"doc.handover_date and doc.erection_completion_confirmed and doc.third_party_inspection_done"
+		" and doc.signed_handover_paper_received"
+		" and (doc.on_delivery_payment_cleared or doc.handover_payment_override_approved)",
 		["SL Manufacturing", "SL Admin"],
 	),
 	(
