@@ -29,6 +29,7 @@ CUSTOM_FIELDS = {
 			"label": "Job Number",
 			"fieldtype": "Data",
 			"read_only": 0,
+			"allow_on_submit": 1,
 			"description": "Defaults to the auto-assigned Job Number — the identifier that travels with this deployment for its whole life",
 			"insert_after": "sl_lift_details_section",
 		},
@@ -107,6 +108,8 @@ CUSTOM_FIELDS = {
 			"fieldtype": "Link",
 			"options": "User",
 			"reqd": 1,
+			"fetch_from": "customer.collection_lead",
+			"fetch_if_empty": 1,
 			"description": "Auto-filled from developer — can be overridden",
 			"insert_after": "free_maintenance_months",
 		},
@@ -246,6 +249,61 @@ CUSTOM_FIELDS = {
 			"description": "Auto-filled at handover: Handover Date + Free Maintenance Months",
 			"insert_after": "handover_date",
 		},
+		# --- Handover Checklist --------------------------------------------
+		# The guide's real handover gate (Section 4.1 MUST list) — replaces
+		# the earlier placeholder of just requiring Handover Date to be filled.
+		{
+			"fieldname": "sl_handover_checklist_section",
+			"label": "Handover Checklist",
+			"fieldtype": "Section Break",
+			"insert_after": "amc_start_date",
+		},
+		{
+			"fieldname": "erection_completion_confirmed",
+			"label": "Erection Completion Confirmed",
+			"fieldtype": "Check",
+			"allow_on_submit": 1,
+			"description": "Confirmed by site supervisor, by way of handover paper",
+			"insert_after": "sl_handover_checklist_section",
+		},
+		{
+			"fieldname": "third_party_inspection_done",
+			"label": "Third Party Inspection Done",
+			"fieldtype": "Check",
+			"allow_on_submit": 1,
+			"description": "If applicable for this order type",
+			"insert_after": "erection_completion_confirmed",
+		},
+		{
+			"fieldname": "signed_handover_paper_received",
+			"label": "Signed Handover Paper Received",
+			"fieldtype": "Check",
+			"allow_on_submit": 1,
+			"description": "Signed by: Contractor, Inspection technician, Client representative",
+			"insert_after": "third_party_inspection_done",
+		},
+		{
+			"fieldname": "sl_handover_checklist_col",
+			"fieldtype": "Column Break",
+			"insert_after": "signed_handover_paper_received",
+		},
+		{
+			"fieldname": "on_delivery_payment_cleared",
+			"label": "On Delivery Payment Cleared",
+			"fieldtype": "Check",
+			"allow_on_submit": 1,
+			"description": "Payment up to and including the On Delivery milestone must be fully received",
+			"insert_after": "sl_handover_checklist_col",
+		},
+		{
+			"fieldname": "handover_payment_override_approved",
+			"label": "Handover Payment Override Approved",
+			"fieldtype": "Check",
+			"permlevel": 1,
+			"allow_on_submit": 1,
+			"description": "Admin/Management ticks if handover is needed without full On Delivery payment",
+			"insert_after": "on_delivery_payment_cleared",
+		},
 		# --- Dismantling Checklist ---------------------------------------------
 		# Required only at Deployment Status = Dismantled; wired into the
 		# AMC -> Dismantled workflow transition condition.
@@ -253,7 +311,7 @@ CUSTOM_FIELDS = {
 			"fieldname": "sl_dismantling_checklist_section",
 			"label": "Dismantling Checklist",
 			"fieldtype": "Section Break",
-			"insert_after": "amc_start_date",
+			"insert_after": "handover_payment_override_approved",
 		},
 		{
 			"fieldname": "dismantle_instruction_received",
@@ -319,9 +377,18 @@ CUSTOM_FIELDS = {
 			"insert_after": "lift_status",
 		},
 		{
+			"fieldname": "pm_visit_overdue",
+			"label": "PM Visit Overdue",
+			"fieldtype": "Check",
+			"allow_on_submit": 1,
+			"read_only": 1,
+			"description": "Auto-set if no PM visit is logged for this lift by the 25th of the month",
+			"insert_after": "outstanding_flag",
+		},
+		{
 			"fieldname": "sl_fleet_col",
 			"fieldtype": "Column Break",
-			"insert_after": "outstanding_flag",
+			"insert_after": "pm_visit_overdue",
 		},
 		{
 			"fieldname": "contractor_labour_bills_percent",
