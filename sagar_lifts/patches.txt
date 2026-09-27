@@ -21,3 +21,5 @@ sagar_lifts.patches.v1_0.dashboards
 sagar_lifts.patches.v1_0.client_scripts
 sagar_lifts.patches.v1_0.workspaces
 sagar_lifts.patches.v1_0.notification_specification
+sagar_lifts.patches.v1_0.import_users
+sagar_lifts.patches.v1_0.role_profiles
