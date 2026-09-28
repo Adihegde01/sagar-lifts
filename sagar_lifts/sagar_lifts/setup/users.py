@@ -12,6 +12,8 @@ Technician / SL Service Manager placeholder — superseded here).
 
 import frappe
 
+from sagar_lifts.sagar_lifts.setup.roles import create_sl_roles
+
 USERS = [
 	("accounts@sagarlifts.com", "Pinky", "SL Billing"),
 	("administration@sagarlifts.com", "Admin", "SL Management"),
@@ -35,6 +37,11 @@ USERS = [
 
 
 def setup_users():
+	# create_sl_roles is a one-time patch on older sites — a role added to
+	# SL_ROLES after that patch already ran (e.g. SL Sales) would otherwise
+	# never exist there. Re-running it here is idempotent/cheap and makes
+	# this patch self-contained instead of order-dependent on another one.
+	create_sl_roles()
 	for email, first_name, role in USERS:
 		if frappe.db.exists("User", email):
 			user = frappe.get_doc("User", email)
