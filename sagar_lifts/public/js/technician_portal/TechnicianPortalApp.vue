@@ -1,5 +1,10 @@
 <template>
 	<div class="tp-page">
+		<div v-if="toast" class="tp-toast">{{ toast }}</div>
+
+		<VisitForm v-if="view === 'form'" @cancel="view = 'list'" @saved="onSaved" />
+
+		<template v-else>
 		<header class="tp-header">
 			<div>
 				<p class="tp-eyebrow">{{ todayLabel }}</p>
@@ -63,19 +68,29 @@
 				</li>
 			</ul>
 		</section>
+		</template>
 	</div>
 </template>
 
 <script setup>
 import { ref, reactive, computed, onMounted } from "vue";
+import VisitForm from "./VisitForm.vue";
 
+const view = ref("list");
+const toast = ref("");
 const loading = ref(true);
 const visits = ref([]);
 
-const fullName = frappe.boot?.user?.full_name || frappe.session.user;
-const firstName = computed(() => fullName.split(" ")[0]);
+// frappe.boot.user.full_name is blank on this account (created via API,
+// never went through the form where it auto-derives from first/last name),
+// so fall back through first_name before ever showing the raw email.
+const displayName =
+	frappe.boot?.user?.full_name ||
+	frappe.boot?.user?.first_name ||
+	frappe.session.user.split("@")[0];
+const firstName = computed(() => displayName.split(" ")[0]);
 const initials = computed(() =>
-	fullName
+	displayName
 		.split(" ")
 		.map((p) => p[0])
 		.slice(0, 2)
@@ -119,11 +134,26 @@ function formatDate(d) {
 }
 
 function newVisit() {
-	frappe.new_doc("Maintenance Visit");
+	view.value = "form";
 }
 
 function openVisit(name) {
+	// Viewing/editing an existing (possibly already-submitted) visit stays
+	// on the native form — only the creation flow was asked to move to Vue.
 	frappe.set_route("maintenance-visit", name);
+}
+
+function showToast(msg) {
+	toast.value = msg;
+	setTimeout(() => {
+		if (toast.value === msg) toast.value = "";
+	}, 3500);
+}
+
+function onSaved({ name }) {
+	view.value = "list";
+	showToast(`Visit ${name} saved.`);
+	loadVisits();
 }
 
 async function loadVisits() {
@@ -168,9 +198,13 @@ onMounted(loadVisits);
 	background: var(--tp-bg);
 	color: var(--tp-ink);
 	min-height: 100vh;
-	max-width: 560px;
+	/* Phone-first tool, but this same page renders in a full desktop
+	   browser too (that's how it's usually reviewed/demoed) — a fixed
+	   560px column there just leaves dead space on both sides. Scale the
+	   reading column with the viewport instead of pinning it. */
+	max-width: clamp(360px, 92vw, 880px);
 	margin: 0 auto;
-	padding: 24px 18px 60px;
+	padding: clamp(18px, 4vw, 40px) clamp(16px, 4vw, 28px) 60px;
 	box-sizing: border-box;
 }
 .tp-page * { box-sizing: border-box; }
@@ -368,5 +402,25 @@ onMounted(loadVisits);
 @keyframes tp-shimmer {
 	0% { background-position: 100% 50%; }
 	100% { background-position: 0 50%; }
+}
+
+.tp-toast {
+	position: fixed;
+	left: 50%;
+	bottom: 24px;
+	transform: translateX(-50%);
+	background: var(--tp-ink, #16181d);
+	color: #fff;
+	font-size: 13.5px;
+	font-weight: 500;
+	padding: 12px 18px;
+	border-radius: 999px;
+	box-shadow: var(--tp-shadow, 0 10px 28px -10px rgba(0, 0, 0, 0.35));
+	z-index: 50;
+	animation: tp-toast-in 0.2s ease;
+}
+@keyframes tp-toast-in {
+	from { opacity: 0; transform: translate(-50%, 8px); }
+	to { opacity: 1; transform: translate(-50%, 0); }
 }
 </style>
