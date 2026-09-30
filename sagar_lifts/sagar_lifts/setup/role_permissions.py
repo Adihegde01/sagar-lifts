@@ -36,6 +36,9 @@ CORE_DOCTYPE_GRID = {
 		"SL Management": dict(read=1, write=1),
 		"SL Collection Lead": dict(read=1),
 		"SL Billing": dict(read=1, write=1, create=1, submit=1),
+		# Same grant as SL Billing — SL Sales isn't in the guide at all; this
+		# is Sagar Lifts' own call (confirmed 2026-09), not a guide transcription.
+		"SL Sales": dict(read=1, write=1, create=1, submit=1),
 		"SL Manufacturing": dict(read=1, write=1, create=1, submit=1),
 		"SL Stores": dict(read=1),
 		# write=1 and submit=1 are required here even though the guide's own
@@ -56,6 +59,7 @@ CORE_DOCTYPE_GRID = {
 		# to match Management's read-only pattern everywhere else.
 		"SL Management": dict(read=1),
 		"SL Billing": dict(read=1),
+		"SL Sales": dict(read=1),
 		"SL Manufacturing": dict(read=1),
 		"SL Stores": dict(read=1, write=1, create=1),
 		"SL Dispatch": dict(read=1, write=1, create=1, submit=1),
@@ -65,6 +69,7 @@ CORE_DOCTYPE_GRID = {
 		"SL Admin": dict(read=1, write=1, create=1, delete=1, submit=1, cancel=1),
 		"SL Management": dict(read=1),
 		"SL Billing": dict(read=1, write=1, create=1, submit=1),
+		"SL Sales": dict(read=1, write=1, create=1, submit=1),
 		"SL Collection Lead": dict(read=1),
 		"SL Manufacturing": dict(read=1),
 	},
@@ -74,6 +79,7 @@ CORE_DOCTYPE_GRID = {
 		"SL Service Manager": dict(read=1, write=1, create=1, submit=1),
 		"SL Technician": dict(read=1, write=1, create=1, submit=1, if_owner=1),
 		"SL Billing": dict(read=1),
+		"SL Sales": dict(read=1),
 		"SL Manufacturing": dict(read=1),
 		"SL Collection Lead": dict(read=1),
 	},
@@ -91,6 +97,7 @@ ALL_SL_ROLES = [
 	"SL Management",
 	"SL Collection Lead",
 	"SL Billing",
+	"SL Sales",
 	"SL Manufacturing",
 	"SL Stores",
 	"SL Dispatch",

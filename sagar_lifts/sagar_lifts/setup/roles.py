@@ -23,8 +23,9 @@ def create_sl_roles():
 		if not frappe.db.exists("Role", role_name):
 			frappe.get_doc({"doctype": "Role", "role_name": role_name}).insert(ignore_permissions=True)
 
-	# Mobile-only role (setup/maintenance_visit.py) — land straight on their one
-	# doctype after login instead of an empty/irrelevant desk home. Role.home_page
-	# is a native field Frappe's login redirect already checks (auth.py), so no
-	# custom JS/route needed.
-	frappe.db.set_value("Role", "SL Technician", "home_page", "app/maintenance-visit")
+	# Mobile-only role (setup/maintenance_visit.py) — land straight on their own
+	# chrome-free portal after login instead of an empty/irrelevant desk home
+	# or the full desk list view. Role.home_page is a native field Frappe's
+	# login redirect already checks (auth.py), so no custom JS/route needed.
+	# See page/technician_portal for the page itself.
+	frappe.db.set_value("Role", "SL Technician", "home_page", "app/technician-portal")
