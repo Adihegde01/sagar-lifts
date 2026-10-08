@@ -5,6 +5,8 @@ SL_ROLES = [
 	"SL Management",
 	"SL Sales",
 	"SL Collection Lead",
+	# One dedicated accounts-team caller chasing new/overdue bills (not a CL).
+	"SL Accounts Caller",
 	"SL Billing",
 	"SL Manufacturing",
 	"SL Stores",

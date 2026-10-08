@@ -54,8 +54,12 @@
 				<input type="date" class="vf-input" v-model="doc.mntc_date" @change="onDateChange" />
 			</div>
 			<div>
-				<p class="vf-label">Maintenance time</p>
+				<p class="vf-label">Time in</p>
 				<input type="time" class="vf-input" v-model="doc.mntc_time" />
+			</div>
+			<div>
+				<p class="vf-label">Time out</p>
+				<input type="time" class="vf-input" v-model="doc.visit_time_out" />
 			</div>
 		</section>
 
@@ -146,7 +150,7 @@
 		</section>
 
 		<section class="vf-section">
-			<p class="vf-label">Findings and remarks</p>
+			<p class="vf-label">Findings and observations</p>
 			<textarea
 				class="vf-input vf-textarea"
 				:class="{ 'vf-input--invalid': errors.findings_and_remarks }"
@@ -154,6 +158,16 @@
 				v-model="doc.findings_and_remarks"
 			></textarea>
 			<p v-if="errors.findings_and_remarks" class="vf-error">{{ errors.findings_and_remarks }}</p>
+		</section>
+
+		<section class="vf-section">
+			<p class="vf-label">Work done</p>
+			<textarea
+				class="vf-input vf-textarea"
+				:class="{ 'vf-input--invalid': errors.work_done_details }"
+				v-model="doc.work_done_details"
+			></textarea>
+			<p v-if="errors.work_done_details" class="vf-error">{{ errors.work_done_details }}</p>
 		</section>
 
 		<section class="vf-section">
@@ -180,7 +194,7 @@ import SignaturePad from "./SignaturePad.vue";
 
 const emit = defineEmits(["cancel", "saved"]);
 
-const visitTypes = ["Preventive Maintenance", "Breakdown", "Inspection"];
+const visitTypes = ["Preventive Maintenance", "Breakdown", "Inspection", "Warranty Visit", "Post Repair Inspection"];
 
 function todayISO() {
 	const d = new Date();
@@ -205,6 +219,7 @@ const doc = reactive({
 	company: "",
 	mntc_date: todayISO(),
 	mntc_time: "",
+	visit_time_out: "",
 	completion_status: "",
 	maintenance_type: "Unscheduled",
 	visit_type: "",
@@ -214,6 +229,7 @@ const doc = reactive({
 	quarter: "",
 	pm_month: "",
 	findings_and_remarks: "",
+	work_done_details: "",
 });
 const labels = reactive({ job_id: "", customer: "", company: "", senior_technician: "" });
 const errors = reactive({});
@@ -257,6 +273,7 @@ function validate() {
 	if (!doc.senior_technician) errors.senior_technician = "Required.";
 	if (!doc.findings_and_remarks || !doc.findings_and_remarks.trim())
 		errors.findings_and_remarks = '"All OK" still needs to be typed — can\'t be blank.';
+	if (!doc.work_done_details || !doc.work_done_details.trim()) errors.work_done_details = "Required.";
 	if (!padRef.value || padRef.value.isEmpty())
 		errors.customer_signature = "Customer signature is required.";
 	return Object.keys(errors).length === 0;

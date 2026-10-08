@@ -1,10 +1,40 @@
 """Runtime doc_events for Sagar Lifts (wired in hooks.py)."""
 
+import re
+
 import frappe
 from frappe import _
-from frappe.utils import cint, flt, getdate, today
+from frappe.utils import cint, flt, getdate, to_timedelta, today
+from frappe.utils.user import get_users_with_role
 
-from sagar_lifts.sagar_lifts.amc_calendar import get_pm_month, get_quarter
+from sagar_lifts.sagar_lifts.amc_calendar import get_pm_month, get_quarter, get_quarter_end
+
+
+def _depends_on_holds(doc, expression):
+	"""Evaluate a form depends-on expression server-side: a bare fieldname, or
+	eval:<JS> limited to the ==, !=, &&, ||, ! forms used in this app's setup."""
+	if not expression.startswith("eval:"):
+		return bool(doc.get(expression))
+	js = expression[len("eval:") :]
+	py = re.sub(r"!(?!=)", " not ", js.replace("&&", " and ").replace("||", " or "))
+	return bool(frappe.safe_eval(py, None, {"doc": doc}))
+
+
+def validate_conditional_mandatory(doc, method=None):
+	# Frappe enforces mandatory_depends_on only in the desk form; this makes the
+	# same rules hold for API/portal saves too. Checks are skipped — Frappe
+	# never treats an unticked box as missing.
+	missing = [
+		df.label
+		for df in doc.meta.fields
+		if df.mandatory_depends_on
+		and not df.reqd
+		and df.fieldtype != "Check"
+		and doc.get(df.fieldname) in (None, "", [])
+		and _depends_on_holds(doc, df.mandatory_depends_on)
+	]
+	if missing:
+		frappe.throw(_("Value missing for: {0}").format(", ".join(_(label) for label in missing)), frappe.MandatoryError)
 
 
 def sales_order_set_job_number(doc, method=None):
@@ -53,10 +83,36 @@ def sales_order_validate_milestone_total(doc, method=None):
 	# saving." (No-Code Guide 2.1 MUST). Auto-calculates Milestone % Total
 	# either way, but only blocks save once the order actually carries a
 	# contract value to bill against.
-	total = sum(flt(doc.get(f"milestone_{i}_percent")) for i in range(1, 5))
+	from sagar_lifts.sagar_lifts.setup.sales_order import MILESTONE_COUNT
+
+	doc.contract_value = doc.grand_total
+	doc.contract_value_in_words = frappe.utils.money_in_words(doc.contract_value) if doc.contract_value else ""
+	total = 0
+	for i in range(1, MILESTONE_COUNT + 1):
+		percent = flt(doc.get(f"milestone_{i}_percent"))
+		doc.set(f"milestone_{i}_amount", flt(doc.contract_value) * percent / 100)
+		total += percent
 	doc.milestone_percent_total = total
 	if doc.grand_total and abs(total - 100) > 0.01:
 		frappe.throw(_("Payment milestones must add up to 100% — currently {0}%").format(total))
+
+
+def sales_order_set_dispatch_cleared(doc, method=None):
+	# Same rule the Deployment workflow's Active -> Dispatched transition uses.
+	doc.dispatch_cleared = 1 if (doc.advance_received or doc.dispatch_override_approved) else 0
+	if doc.dispatch_override_approved and not doc.dispatch_override_by:
+		doc.dispatch_override_by = frappe.session.user
+		doc.dispatch_override_date = today()
+
+
+def sales_order_stamp_deployment_status(doc, method=None):
+	if doc.has_value_changed("deployment_status"):
+		doc.status_last_updated = today()
+		doc.status_updated_by = frappe.session.user
+
+
+def sales_order_set_total_outstanding(doc, method=None):
+	doc.total_outstanding = flt(doc.total_billed_to_date) - flt(doc.total_received_to_date)
 
 
 def sales_order_propagate_outstanding_flag(doc, method=None):
@@ -68,6 +124,8 @@ def sales_order_propagate_outstanding_flag(doc, method=None):
 	# (this scheduled job, another job, or a person ticking it by hand).
 	before = getattr(doc, "_doc_before_save", None)
 	was_flagged = before.get("outstanding_flag") if before else 0
+	if doc.outstanding_flag and not was_flagged:
+		doc.outstanding_flag_date = doc.outstanding_flag_date or today()
 	if doc.outstanding_flag and not was_flagged and doc.customer:
 		siblings = frappe.get_all(
 			"Sales Order",
@@ -80,7 +138,7 @@ def sales_order_propagate_outstanding_flag(doc, method=None):
 			pluck="name",
 		)
 		for name in siblings:
-			frappe.db.set_value("Sales Order", name, "outstanding_flag", 1)
+			frappe.db.set_value("Sales Order", name, {"outstanding_flag": 1, "outstanding_flag_date": today()})
 
 
 PRODUCTION_STAGES = [
@@ -176,6 +234,40 @@ def maintenance_visit_set_quarter(doc, method=None):
 		doc.pm_month = get_pm_month(doc.mntc_date)
 
 
+def maintenance_visit_set_total_hours(doc, method=None):
+	if not (doc.mntc_time and doc.visit_time_out):
+		doc.total_hours_on_site = 0
+		return
+	seconds = (to_timedelta(doc.visit_time_out) - to_timedelta(doc.mntc_time)).total_seconds()
+	if seconds < 0:  # visit ran past midnight
+		seconds += 24 * 3600
+	doc.total_hours_on_site = round(seconds / 3600, 2)
+
+
+def maintenance_visit_set_schedule_variance(doc, method=None):
+	doc.variance_from_schedule_days = (
+		frappe.utils.date_diff(doc.mntc_date, doc.scheduled_visit_date)
+		if doc.mntc_date and doc.scheduled_visit_date
+		else 0
+	)
+
+
+def maintenance_visit_set_signature_received(doc, method=None):
+	doc.customer_signature_received = 1 if doc.customer_signature else 0
+
+
+def maintenance_visit_set_breakdown_times(doc, method=None):
+	def at(date, time):
+		return frappe.utils.get_datetime(f"{date} {time}") if date and time else None
+
+	reported = at(doc.breakdown_reported_date, doc.breakdown_reported_time)
+	reached = at(doc.technician_reached_date, doc.technician_reached_time)
+	resolved = at(doc.breakdown_resolved_date, doc.breakdown_resolved_time)
+	hours = lambda end: round((end - reported).total_seconds() / 3600, 2) if reported and end else 0
+	doc.response_time_hours = hours(reached)
+	doc.resolution_time_hours = hours(resolved)
+
+
 def maintenance_visit_validate_date(doc, method=None):
 	# "Cannot be a future date" (No-Code Guide 9.2).
 	if doc.mntc_date and getdate(doc.mntc_date) > getdate():
@@ -193,9 +285,152 @@ def maintenance_visit_validate_technician(doc, method=None):
 		)
 
 
+def purchase_invoice_set_difference_amount(doc, method=None):
+	doc.difference_amount = flt(doc.bill_amount_as_per_contractor) - flt(doc.bill_amount_agreed)
+
+
+def _submitted_labour_bills(job_id, exclude=None):
+	filters = {"bill_type": "Contractor", "job_id": job_id, "docstatus": 1}
+	if exclude:
+		filters["name"] = ["!=", exclude]
+	return sum(flt(v) for v in frappe.get_all("Purchase Invoice", filters=filters, pluck="grand_total"))
+
+
+def purchase_invoice_set_labour_bill_tracking(doc, method=None):
+	if doc.bill_type != "Contractor" or not doc.job_id:
+		doc.labour_bill_percent = doc.cumulative_labour_bills_percent = 0
+		doc.labour_bill_within_limit = 1
+		return
+	contract_value = flt(frappe.db.get_value("Sales Order", doc.job_id, "grand_total"))
+	others = _submitted_labour_bills(doc.job_id, exclude=doc.name)
+	percent = lambda amount: round(amount / contract_value * 100, 2) if contract_value else 0
+	doc.labour_bill_percent = percent(flt(doc.grand_total))
+	doc.cumulative_labour_bills_percent = percent(others + flt(doc.grand_total))
+	doc.labour_bill_within_limit = 1 if doc.cumulative_labour_bills_percent <= 100 else 0
+
+
+def purchase_invoice_update_order_labour_bills(doc, method=None):
+	# Keep the Sales Order's running total in step on submit / cancel.
+	if doc.bill_type != "Contractor" or not doc.job_id:
+		return
+	total = _submitted_labour_bills(doc.job_id)
+	contract_value = flt(frappe.db.get_value("Sales Order", doc.job_id, "grand_total"))
+	frappe.db.set_value(
+		"Sales Order",
+		doc.job_id,
+		{
+			"contractor_labour_bills_amount": total,
+			"contractor_labour_bills_percent": round(total / contract_value * 100, 2) if contract_value else 0,
+		},
+	)
+
+
+def sales_invoice_set_naming_series(doc, method=None):
+	# Invoice Type decides the series — a PI can never pick up an SL number.
+	if doc.is_return:
+		return
+	doc.naming_series = "SL/.####./.SL_FY." if doc.pi_type == "Tax Invoice" else "PI/.####./.SL_FY."
+
+
+def sales_invoice_set_collection_defaults(doc, method=None):
+	if not doc.accounts_caller:
+		callers = get_users_with_role("SL Accounts Caller")
+		if len(callers) == 1:
+			doc.accounts_caller = callers[0]
+	if doc.escalated_to_management and not doc.escalation_date:
+		doc.escalation_date = today()
+
+
+def sales_invoice_fill_milestone(doc, method=None):
+	# Milestone Name / % default from the Sales Order's Payment Milestones tab.
+	if doc.billing_trigger_type != "Milestone" or not (doc.job_id and doc.milestone_number):
+		return
+	n = doc.milestone_number
+	name, percent = frappe.db.get_value("Sales Order", doc.job_id, [f"milestone_{n}_name", f"milestone_{n}_percent"])
+	doc.milestone_name = doc.milestone_name or name
+	doc.milestone_percent = doc.milestone_percent or percent
+
+
+def sales_invoice_set_amc_period(doc, method=None):
+	if doc.billing_trigger_type != "AMC Quarterly" or not doc.amc_period_from:
+		doc.amc_months_billed = 0
+		return
+	doc.amc_quarter = get_quarter(doc.amc_period_from)
+	doc.amc_period_to = doc.amc_period_to or get_quarter_end(doc.amc_period_from)
+	start, end = getdate(doc.amc_period_from), getdate(doc.amc_period_to)
+	doc.amc_months_billed = max((end.year - start.year) * 12 + end.month - start.month + 1, 0)
+
+
+def sales_invoice_validate_pi_to_ti(doc, method=None):
+	if doc.pi_type != "Tax Invoice":
+		return
+	if doc.ti_raised_against_full_pi and doc.part_payment_ti:
+		frappe.throw(_("A Tax Invoice is either against the full PI or a part payment — not both"))
+	if doc.original_pi_number and not doc.pi_date:
+		doc.pi_date = frappe.db.get_value(
+			"Sales Invoice", {"name": doc.original_pi_number, "pi_type": "Proforma Invoice"}, "posting_date"
+		)
+
+
+def get_outstanding_escalation(due_date, outstanding_amount):
+	"""(days past due, escalation level) — mirrors the overdue notification ladder."""
+	days = max(frappe.utils.date_diff(today(), due_date), 0) if due_date and flt(outstanding_amount) > 0 else 0
+	if days >= 90:
+		return days, "Level 4 — Bad Debt"
+	if days >= 15:
+		return days, "Level 3 — Management"
+	if days >= 7:
+		return days, "Level 2 — Billing"
+	if days >= 1:
+		return days, "Level 1 — CL"
+	return days, "None"
+
+
+def sales_invoice_set_outstanding_tracking(doc, method=None):
+	if doc.customer:
+		amounts = frappe.get_all(
+			"Sales Invoice",
+			filters={"customer": doc.customer, "docstatus": 1, "outstanding_amount": [">", 0], "name": ["!=", doc.name]},
+			pluck="outstanding_amount",
+		)
+		doc.previous_outstanding_amount = sum(flt(a) for a in amounts)
+		doc.previous_pi_outstanding = 1 if amounts else 0
+	if doc.outstanding_warning_acknowledged and not doc.outstanding_warning_acknowledged_by:
+		doc.outstanding_warning_acknowledged_by = frappe.session.user
+	doc.days_outstanding, doc.escalation_level = get_outstanding_escalation(doc.due_date, doc.outstanding_amount)
+
+
+def sales_invoice_require_outstanding_acknowledgement(doc, method=None):
+	if doc.previous_pi_outstanding and not doc.outstanding_warning_acknowledged:
+		frappe.throw(
+			_("This developer has {0} outstanding on earlier invoices — tick Outstanding Warning Acknowledged to submit").format(
+				frappe.format_value(doc.previous_outstanding_amount, {"fieldtype": "Currency"})
+			)
+		)
+
+
+def purchase_order_stamp_approval(doc, method=None):
+	if doc.po_approval_status == "Approved" and not doc.po_approved_by:
+		doc.po_approved_by = frappe.session.user
+		doc.po_approval_date = today()
+
+
+def purchase_receipt_set_job_id(doc, method=None):
+	if doc.job_id:
+		return
+	for po in {row.purchase_order for row in doc.get("items") or [] if row.purchase_order}:
+		if job_id := frappe.db.get_value("Purchase Order", po, "job_id"):
+			doc.job_id = job_id
+			return
+
+
 def purchase_invoice_set_manufacturing_approval(doc, method=None):
 	# Stamp who/when approved a contractor bill the first time it's ticked.
 	is_contractor_bill = doc.bill_type == "Contractor"
+	if is_contractor_bill and doc.sent_to_manufacturing and not doc.sent_to_manufacturing_date:
+		doc.sent_to_manufacturing_date = today()
+	if doc.approved_by_manufacturing and doc.manufacturing_rejected:
+		frappe.throw(_("A bill can't be both approved and rejected by Manufacturing"))
 	if is_contractor_bill and doc.approved_by_manufacturing and not doc.manufacturing_approval_by:
 		doc.manufacturing_approval_by = frappe.session.user
 		doc.manufacturing_approval_date = today()

@@ -63,6 +63,18 @@ def get_pi_deadline(date):
 	return add_days(get_quarter_end(date), 5)
 
 
+def get_fy_suffix(date):
+	"""'26-27' style Indian FY label for `date` (FY starts 1 April)."""
+	date = getdate(date)
+	start = date.year if date.month >= 4 else date.year - 1
+	return f"{start % 100:02d}-{(start + 1) % 100:02d}"
+
+
+def naming_fy(doc, part):
+	"""naming_series_variables hook for .SL_FY. — FY of the document's posting date."""
+	return get_fy_suffix((doc and doc.get("posting_date")) or getdate())
+
+
 def get_last_completed_quarter(today):
 	"""(quarter_label, quarter_end, deadline) for the FY quarter just before `today`'s quarter."""
 	prev_quarter_end = add_days(get_quarter_start(today), -1)

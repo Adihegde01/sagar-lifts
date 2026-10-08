@@ -1,9 +1,26 @@
 """Scheduled tasks for Sagar Lifts (wired in hooks.py scheduler_events)."""
 
 import frappe
-from frappe.utils import get_first_day, getdate
+from frappe.utils import get_first_day, getdate, today
 
 from sagar_lifts.sagar_lifts.amc_calendar import get_last_completed_quarter, get_quarter_start
+
+
+def refresh_invoice_escalation():
+	"""Keep Days Outstanding / Escalation Level current on submitted invoices."""
+	from sagar_lifts.sagar_lifts.doc_events import get_outstanding_escalation
+
+	invoices = frappe.get_all(
+		"Sales Invoice",
+		filters={"docstatus": 1},
+		# Unpaid ones need refreshing; paid ones only until they're reset to None.
+		or_filters={"outstanding_amount": [">", 0], "escalation_level": ["!=", "None"]},
+		fields=["name", "due_date", "outstanding_amount", "days_outstanding", "escalation_level"],
+	)
+	for inv in invoices:
+		days, level = get_outstanding_escalation(inv.due_date, inv.outstanding_amount)
+		if (days, level) != (inv.days_outstanding, inv.escalation_level):
+			frappe.db.set_value("Sales Invoice", inv.name, {"days_outstanding": days, "escalation_level": level})
 
 
 def flag_overdue_amc_billing():
@@ -36,7 +53,7 @@ def flag_overdue_amc_billing():
 			},
 		)
 		if not billed:
-			frappe.db.set_value("Sales Order", job_id, "outstanding_flag", 1)
+			frappe.db.set_value("Sales Order", job_id, {"outstanding_flag": 1, "outstanding_flag_date": today()})
 
 
 def flag_overdue_pm_visits():

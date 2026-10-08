@@ -94,6 +94,7 @@ after_install = [
 	"sagar_lifts.sagar_lifts.setup.maintenance_visit.setup_maintenance_visit_customization",
 	"sagar_lifts.sagar_lifts.setup.purchase_invoice.setup_purchase_invoice_customization",
 	"sagar_lifts.sagar_lifts.setup.purchase_order.setup_purchase_order_customization",
+	"sagar_lifts.sagar_lifts.setup.purchase_receipt.setup_purchase_receipt_customization",
 	"sagar_lifts.sagar_lifts.setup.sales_invoice.setup_sales_invoice_customization",
 	"sagar_lifts.sagar_lifts.setup.payment_entry.setup_payment_entry_customization",
 	"sagar_lifts.sagar_lifts.setup.maintenance_schedule.setup_maintenance_schedule_customization",
@@ -102,6 +103,7 @@ after_install = [
 	"sagar_lifts.sagar_lifts.setup.po_approval_workflow.setup_po_approval_workflow",
 	"sagar_lifts.sagar_lifts.setup.role_permissions.setup_role_permissions",
 	"sagar_lifts.sagar_lifts.setup.naming_series.setup_naming_series",
+	"sagar_lifts.sagar_lifts.setup.warehouses.setup_warehouses",
 	"sagar_lifts.sagar_lifts.setup.customer.setup_customer_customization",
 	"sagar_lifts.sagar_lifts.setup.dashboards.setup_dashboards",
 	"sagar_lifts.sagar_lifts.setup.client_scripts.setup_client_scripts",
@@ -178,7 +180,11 @@ doc_events = {
 			"sagar_lifts.sagar_lifts.doc_events.sales_order_validate_contract_value",
 			"sagar_lifts.sagar_lifts.doc_events.sales_order_validate_milestone_total",
 			"sagar_lifts.sagar_lifts.doc_events.sales_order_set_amc_start_date",
+			"sagar_lifts.sagar_lifts.doc_events.sales_order_set_dispatch_cleared",
+			"sagar_lifts.sagar_lifts.doc_events.sales_order_stamp_deployment_status",
+			"sagar_lifts.sagar_lifts.doc_events.sales_order_set_total_outstanding",
 			"sagar_lifts.sagar_lifts.doc_events.sales_order_propagate_outstanding_flag",
+			"sagar_lifts.sagar_lifts.doc_events.validate_conditional_mandatory",
 		],
 		# Frappe only runs "validate" for the save/submit actions — editing a
 		# field on an *already-submitted* order (the normal case: Manufacturing
@@ -189,33 +195,89 @@ doc_events = {
 		"before_update_after_submit": [
 			"sagar_lifts.sagar_lifts.doc_events.sales_order_set_job_number",
 			"sagar_lifts.sagar_lifts.doc_events.sales_order_set_amc_start_date",
+			"sagar_lifts.sagar_lifts.doc_events.sales_order_set_dispatch_cleared",
+			"sagar_lifts.sagar_lifts.doc_events.sales_order_stamp_deployment_status",
+			"sagar_lifts.sagar_lifts.doc_events.sales_order_set_total_outstanding",
 			"sagar_lifts.sagar_lifts.doc_events.sales_order_propagate_outstanding_flag",
+			"sagar_lifts.sagar_lifts.doc_events.validate_conditional_mandatory",
 		],
 		"on_submit": [
 			"sagar_lifts.sagar_lifts.doc_events.sales_order_create_project",
 			"sagar_lifts.sagar_lifts.doc_events.sales_order_create_bom_skeleton",
 		],
 	},
+	"Sales Invoice": {
+		"before_insert": "sagar_lifts.sagar_lifts.doc_events.sales_invoice_set_naming_series",
+		"validate": [
+			"sagar_lifts.sagar_lifts.doc_events.sales_invoice_fill_milestone",
+			"sagar_lifts.sagar_lifts.doc_events.sales_invoice_set_amc_period",
+			"sagar_lifts.sagar_lifts.doc_events.sales_invoice_validate_pi_to_ti",
+			"sagar_lifts.sagar_lifts.doc_events.sales_invoice_set_outstanding_tracking",
+			"sagar_lifts.sagar_lifts.doc_events.sales_invoice_set_collection_defaults",
+			"sagar_lifts.sagar_lifts.doc_events.validate_conditional_mandatory",
+		],
+		# Collection tab is filled on submitted invoices — validate doesn't run then.
+		"before_update_after_submit": [
+			"sagar_lifts.sagar_lifts.doc_events.sales_invoice_set_collection_defaults",
+			"sagar_lifts.sagar_lifts.doc_events.validate_conditional_mandatory",
+		],
+		"before_submit": "sagar_lifts.sagar_lifts.doc_events.sales_invoice_require_outstanding_acknowledgement",
+	},
+	"Purchase Order": {
+		"validate": [
+			"sagar_lifts.sagar_lifts.doc_events.purchase_order_stamp_approval",
+			"sagar_lifts.sagar_lifts.doc_events.validate_conditional_mandatory",
+		],
+	},
+	"Purchase Receipt": {
+		"validate": [
+			"sagar_lifts.sagar_lifts.doc_events.purchase_receipt_set_job_id",
+			"sagar_lifts.sagar_lifts.doc_events.validate_conditional_mandatory",
+		],
+	},
 	"Purchase Invoice": {
-		"validate": "sagar_lifts.sagar_lifts.doc_events.purchase_invoice_set_manufacturing_approval",
+		"validate": [
+			"sagar_lifts.sagar_lifts.doc_events.purchase_invoice_set_manufacturing_approval",
+			"sagar_lifts.sagar_lifts.doc_events.purchase_invoice_set_difference_amount",
+			"sagar_lifts.sagar_lifts.doc_events.purchase_invoice_set_labour_bill_tracking",
+			"sagar_lifts.sagar_lifts.doc_events.validate_conditional_mandatory",
+		],
+		"on_submit": "sagar_lifts.sagar_lifts.doc_events.purchase_invoice_update_order_labour_bills",
+		"on_cancel": "sagar_lifts.sagar_lifts.doc_events.purchase_invoice_update_order_labour_bills",
 	},
 	"Maintenance Visit": {
 		"validate": [
 			"sagar_lifts.sagar_lifts.doc_events.maintenance_visit_set_quarter",
+			"sagar_lifts.sagar_lifts.doc_events.maintenance_visit_set_total_hours",
+			"sagar_lifts.sagar_lifts.doc_events.maintenance_visit_set_schedule_variance",
+			"sagar_lifts.sagar_lifts.doc_events.maintenance_visit_set_signature_received",
+			"sagar_lifts.sagar_lifts.doc_events.maintenance_visit_set_breakdown_times",
 			"sagar_lifts.sagar_lifts.doc_events.maintenance_visit_validate_date",
 			"sagar_lifts.sagar_lifts.doc_events.maintenance_visit_validate_technician",
+			"sagar_lifts.sagar_lifts.doc_events.validate_conditional_mandatory",
 		],
+	},
+	"Delivery Note": {
+		"validate": "sagar_lifts.sagar_lifts.doc_events.validate_conditional_mandatory",
 	},
 }
 
 # Scheduled Tasks
 # ---------------
 
+# .SL_FY. in a naming series -> Indian FY of the posting date, e.g. 26-27
+naming_series_variables = {"SL_FY": "sagar_lifts.sagar_lifts.amc_calendar.naming_fy"}
+
 scheduler_events = {
 	"daily": [
 		"sagar_lifts.sagar_lifts.tasks.flag_overdue_amc_billing",
 		"sagar_lifts.sagar_lifts.tasks.flag_overdue_pm_visits",
+		"sagar_lifts.sagar_lifts.tasks.refresh_invoice_escalation",
 	],
+	"cron": {
+		# Mondays 09:00 — weekly CL / Accounts Caller review reminders to SL Admin
+		"0 9 * * 1": ["sagar_lifts.sagar_lifts.collection.send_weekly_review_reminders"],
+	},
 }
 
 # Testing

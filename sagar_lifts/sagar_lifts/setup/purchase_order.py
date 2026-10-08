@@ -1,7 +1,7 @@
 """Purchase Order — same Contractor/Supplier split as Purchase Invoice
 (setup/purchase_invoice.py). A PO for contractor labour needs to trace back
-to the job just like the resulting Purchase Invoice does; a routine material
-PO to a supplier never carries a Job Number.
+to the job just like the resulting Purchase Invoice does. Material POs can
+carry the job too (Sagar Lifts Procurement tab) when bought for a specific lift.
 
 A contractor is a Supplier (Section 15: contractors are registered as
 Suppliers, Supplier Group "Contractors") — so both Bill Types use the same
@@ -30,34 +30,6 @@ CUSTOM_FIELDS = {
 			"insert_after": "supplier_name",
 		},
 		{
-			"fieldname": "job_id",
-			"label": "Linked Sales Order",
-			"fieldtype": "Link",
-			"options": "Sales Order",
-			"depends_on": IS_CONTRACTOR_PO,
-			"in_standard_filter": 1,
-			"description": "The deployment this labour is for — blank and irrelevant for a Supplier PO",
-			"insert_after": "bill_type",
-		},
-		{
-			"fieldname": "job_number",
-			"label": "Job Number",
-			"fieldtype": "Data",
-			"fetch_from": "job_id.job_number",
-			"read_only": 1,
-			"depends_on": IS_CONTRACTOR_PO,
-			"insert_after": "job_id",
-		},
-		{
-			"fieldname": "job_name",
-			"label": "Job Name",
-			"fieldtype": "Data",
-			"fetch_from": "job_id.job_name",
-			"read_only": 1,
-			"depends_on": IS_CONTRACTOR_PO,
-			"insert_after": "job_number",
-		},
-		{
 			# Dedicated field, not the native `status` — Purchase Order's own
 			# status is recomputed by ERPNext's set_status() on every save
 			# (Draft/To Receive and Bill/Completed/...), which would stomp any
@@ -67,7 +39,88 @@ CUSTOM_FIELDS = {
 			"fieldtype": "Select",
 			"options": "\nDraft\nPending Approval\nApproved\nOrdered",
 			"description": "Workflow state field — PO Approval workflow",
+			"insert_after": "bill_type",
+		},
+		# --- Sagar Lifts Procurement tab (between Details and Address & Contact)
+		{
+			"fieldname": "sl_procurement_tab",
+			"label": "Sagar Lifts Procurement",
+			"fieldtype": "Tab Break",
+			"insert_after": "item_wise_tax_details",
+		},
+		{
+			"fieldname": "job_id",
+			"label": "Linked Sales Order",
+			"fieldtype": "Link",
+			"options": "Sales Order",
+			"in_standard_filter": 1,
+			"description": "The lift/deployment this PO is for — contractor labour or material for that job",
+			"insert_after": "sl_procurement_tab",
+		},
+		{
+			"fieldname": "job_number",
+			"label": "Job Number",
+			"fieldtype": "Data",
+			"fetch_from": "job_id.job_number",
+			"read_only": 1,
+			"insert_after": "job_id",
+		},
+		{
+			"fieldname": "job_name",
+			"label": "Job Name",
+			"fieldtype": "Data",
+			"fetch_from": "job_id.job_name",
+			"read_only": 1,
+			"insert_after": "job_number",
+		},
+		{
+			"fieldname": "procurement_reason",
+			"label": "Procurement Reason",
+			"fieldtype": "Select",
+			"options": "\nNew Installation\nRe-erection\nAMC Spare\nReplacement\nBreakdown Emergency\nStock Replenishment",
+			"reqd": 1,
 			"insert_after": "job_name",
+		},
+		{
+			"fieldname": "required_at_site_by",
+			"label": "Required at Site By",
+			"fieldtype": "Date",
+			"insert_after": "procurement_reason",
+		},
+		{
+			"fieldname": "urgency_level",
+			"label": "Urgency Level",
+			"fieldtype": "Select",
+			"options": "Normal\nUrgent\nCritical",
+			"default": "Normal",
+			"insert_after": "required_at_site_by",
+		},
+		{
+			"fieldname": "sl_procurement_col",
+			"fieldtype": "Column Break",
+			"insert_after": "urgency_level",
+		},
+		{
+			"fieldname": "po_approved_by",
+			"label": "Approved By",
+			"fieldtype": "Link",
+			"options": "User",
+			"read_only": 1,
+			"description": "Auto-fills when the PO Approval workflow reaches Approved",
+			"insert_after": "sl_procurement_col",
+		},
+		{
+			"fieldname": "po_approval_date",
+			"label": "Approval Date",
+			"fieldtype": "Date",
+			"read_only": 1,
+			"insert_after": "po_approved_by",
+		},
+		{
+			"fieldname": "procurement_notes",
+			"label": "Procurement Notes",
+			"fieldtype": "Small Text",
+			"insert_after": "po_approval_date",
 		},
 	]
 }

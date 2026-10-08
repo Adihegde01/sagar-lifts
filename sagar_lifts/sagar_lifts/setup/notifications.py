@@ -117,6 +117,64 @@ NOTIFICATIONS = [
 		"subject": "PM OVERDUE — {{ doc.item_name }} ({{ doc.parent }})",
 		"recipients": [_role("SL Service Manager"), _role("SL Admin"), _role("SL Management")],
 	},
+	# --- Collection workflow, Step 1: PI raised -----------------------------
+	{
+		**BASE,
+		"name": "SL New PI - Collection Lead",
+		"document_type": "Sales Invoice",
+		"event": "Submit",
+		"condition": "doc.pi_type == 'Proforma Invoice'",
+		"subject": "New PI Raised — {{ doc.name }} — {{ doc.customer_name }} — ₹{{ doc.grand_total }}",
+		"message": (
+			"A new Proforma Invoice has been raised for {{ doc.customer_name }}. PI: {{ doc.name }}. "
+			"Amount: ₹{{ doc.grand_total }}. Due Date: {{ doc.due_date }}. Please begin follow up and "
+			"log all interactions as comments on this PI."
+		),
+		"recipients": [_field("collection_lead")],
+	},
+	{
+		**BASE,
+		"name": "SL New PI - Accounts Caller",
+		"document_type": "Sales Invoice",
+		"event": "Submit",
+		"condition": "doc.pi_type == 'Proforma Invoice'",
+		"subject": "New PI — Add to Follow Up List — {{ doc.name }} — {{ doc.customer_name }}",
+		"message": (
+			"New PI {{ doc.name }} raised for {{ doc.customer_name }}. Amount ₹{{ doc.grand_total }}. "
+			"Due: {{ doc.due_date }}. Please add to your calling schedule and log all interactions."
+		),
+		"recipients": [_field("accounts_caller")],
+	},
+	{
+		**BASE,
+		"name": "SL Payment Commitment Due Today",
+		"document_type": "Sales Invoice",
+		"event": "Days After",
+		"date_changed": "payment_committed_date",
+		"days_in_advance": 0,
+		"condition": "doc.commitment_fulfilled == 0",
+		"subject": "Payment Commitment Due Today — {{ doc.customer_name }} — ₹{{ doc.payment_committed_amount }}",
+		"message": (
+			"{{ doc.customer_name }} had committed payment of ₹{{ doc.payment_committed_amount }} by today. "
+			"Please verify if payment received and update the PI."
+		),
+		"recipients": [_field("collection_lead"), _field("accounts_caller")],
+	},
+	{
+		**BASE,
+		"name": "SL Payment Commitment Missed",
+		"document_type": "Sales Invoice",
+		"event": "Days After",
+		"date_changed": "payment_committed_date",
+		"days_in_advance": 2,
+		"condition": "doc.commitment_fulfilled == 0",
+		"subject": "COMMITMENT MISSED — {{ doc.customer_name }} — ₹{{ doc.payment_committed_amount }}",
+		"message": (
+			"Payment commitment of ₹{{ doc.payment_committed_amount }} from {{ doc.customer_name }} due on "
+			"{{ doc.payment_committed_date }} has not been fulfilled. Escalation required."
+		),
+		"recipients": [_field("collection_lead"), _field("accounts_caller"), _role("SL Admin")],
+	},
 	{
 		**BASE,
 		"name": "SL Previous PI Unpaid Warning",

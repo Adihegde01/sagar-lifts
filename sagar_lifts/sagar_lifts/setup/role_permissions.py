@@ -71,6 +71,7 @@ CORE_DOCTYPE_GRID = {
 		"SL Billing": dict(read=1, write=1, create=1, submit=1),
 		"SL Sales": dict(read=1, write=1, create=1, submit=1),
 		"SL Collection Lead": dict(read=1),
+		"SL Accounts Caller": dict(read=1),
 		"SL Manufacturing": dict(read=1),
 	},
 	"Maintenance Visit": {
@@ -96,6 +97,7 @@ ALL_SL_ROLES = [
 	"SL Admin",
 	"SL Management",
 	"SL Collection Lead",
+	"SL Accounts Caller",
 	"SL Billing",
 	"SL Sales",
 	"SL Manufacturing",
