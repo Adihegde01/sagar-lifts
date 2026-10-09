@@ -1,0 +1,20 @@
+{
+ "content": null,
+ "docstatus": 0,
+ "doctype": "Page",
+ "module": "sagar-lifts",
+ "name": "technician-portal",
+ "page_name": "technician-portal",
+ "roles": [
+  {
+   "role": "SL Technician"
+  },
+  {
+   "role": "SL Admin"
+  }
+ ],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "title": "My Maintenance Visits"
+}

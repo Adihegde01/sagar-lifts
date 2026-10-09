@@ -6,6 +6,7 @@ Run: bench --site <site> execute sagar_lifts.sagar_lifts.test_amc_calendar.demo
 from frappe.utils import getdate
 
 from sagar_lifts.sagar_lifts.amc_calendar import (
+	get_fy_suffix,
 	get_last_completed_quarter,
 	get_pi_deadline,
 	get_pm_month,
@@ -43,6 +44,12 @@ def demo():
 	# FY year rollover: Q3 (Oct-Dec) deadline falls in January of the next year
 	q, qend, deadline = get_last_completed_quarter("2027-01-06")
 	assert (q, qend, deadline) == ("Q3", getdate("2026-12-31"), getdate("2027-01-05"))
+
+	# invoice-number FY suffix flips on 1 April, and wraps the century
+	assert get_fy_suffix("2026-03-31") == "25-26"
+	assert get_fy_suffix("2026-04-01") == "26-27"
+	assert get_fy_suffix("2027-01-15") == "26-27"
+	assert get_fy_suffix("2099-12-31") == "99-00"
 
 	print("amc_calendar: all checks passed")
 

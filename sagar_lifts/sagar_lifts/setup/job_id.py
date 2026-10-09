@@ -5,13 +5,14 @@ document so the whole lifecycle — delivery, billing, service, AMC — can be
 traced back to one job.
 """
 
+import frappe
 from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 
 
-def _job_id_field(insert_after, reqd=0):
+def _job_id_field(insert_after, reqd=0, label="Job ID"):
 	return {
 		"fieldname": "job_id",
-		"label": "Job ID",
+		"label": label,
 		"fieldtype": "Link",
 		"options": "Sales Order",
 		"reqd": reqd,
@@ -46,9 +47,11 @@ def _job_name_field(insert_after="job_id"):
 
 CUSTOM_FIELDS = {
 	"Delivery Note": [
-		_job_id_field("customer_name", reqd=1),
-		_job_number_field(),
-		_job_name_field(insert_after="job_number"),
+		_job_id_field("customer_name", reqd=1, label="Linked Sales Order"),
+		# No job_number here — Sales Order's own job_number defaults to the
+		# order's own name (doc_events.sales_order_set_job_number), so it
+		# duplicated Job ID's value verbatim. Dropped 2026-09-30.
+		_job_name_field(insert_after="job_id"),
 	],
 	# Maintenance Visit, Purchase Invoice and Sales Invoice own their own
 	# job_id/job_number/job_name — see setup/maintenance_visit.py,
@@ -58,4 +61,8 @@ CUSTOM_FIELDS = {
 
 
 def setup_job_id_links():
+	# Drop the now-redundant Job Number field this used to add to Delivery
+	# Note — see the CUSTOM_FIELDS comment above.
+	frappe.db.delete("Custom Field", {"dt": "Delivery Note", "fieldname": "job_number"})
 	create_custom_fields(CUSTOM_FIELDS, ignore_validate=True)
+	frappe.clear_cache(doctype="Delivery Note")

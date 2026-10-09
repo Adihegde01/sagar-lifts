@@ -23,3 +23,23 @@ sagar_lifts.patches.v1_0.workspaces
 sagar_lifts.patches.v1_0.notification_specification
 sagar_lifts.patches.v1_0.import_users
 sagar_lifts.patches.v1_0.role_profiles
+sagar_lifts.patches.v1_0.payment_entry_job_fields
+sagar_lifts.patches.v1_0.maintenance_schedule_job_fields
+sagar_lifts.patches.v1_0.stock_entry_job_fields
+sagar_lifts.patches.v1_0.technician_portal_home_page
+sagar_lifts.patches.v1_0.delivery_note_drop_job_number
+sagar_lifts.patches.v1_0.warehouses
+sagar_lifts.patches.v1_0.sales_order_lift_fields #2026-10-07p lift specs, site & developer, commercial terms, milestones tab, dispatch & advance, installation & handover, deployment status stamps, amc details, jumping records, dismantling, financial summary, re-erection reference, internal notes, labour bills read-only
+sagar_lifts.patches.v1_0.delivery_note_challan_fields #2026-10-07j challan details, vehicle & transport, e-way bill, stores verification, signed challan return, jumping specific, dispatch notes
+sagar_lifts.patches.v1_0.maintenance_visit_pm_fields #2026-10-07i visit information, pm schedule, findings & work done, spares & materials, chargeable visit, customer confirmation, breakdown specific, internal notes
+sagar_lifts.patches.v1_0.purchase_invoice_bill_fields #2026-10-07f bill verification, manufacturing approval, labour bill tracking, payment details, sagar lifts billing tab
+sagar_lifts.patches.v1_0.sales_invoice_pi_type_fields #2026-10-08 invoice classification, milestone billing, amc & jumping billing, pi to ti conversion, outstanding tracking, billing notes
+sagar_lifts.patches.v1_0.naming_series #2026-10-07 dynamic FY suffix
+sagar_lifts.patches.v1_0.purchase_order_bill_fields #2026-10-07 sagar lifts procurement tab
+sagar_lifts.patches.v1_0.purchase_receipt_grn_fields
+sagar_lifts.patches.v1_0.purchase_receipt_grn_fields #2026-10-07 condition options
+sagar_lifts.patches.v1_0.create_sl_roles #2026-10-07 accounts caller
+sagar_lifts.patches.v1_0.role_permissions #2026-10-07 accounts caller
+sagar_lifts.patches.v1_0.notification_specification #2026-10-08 collection notifications 1-4
+sagar_lifts.patches.v1_0.backfill_challan_date
+sagar_lifts.patches.v1_0.client_scripts #2026-10-08 log collection update button

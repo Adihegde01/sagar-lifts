@@ -22,12 +22,17 @@ USERS = [
 	("info@sagarlifts.com", "Info", "SL Management"),
 	("maintenance@sagarlifts.com", "Snehal", "SL Service Manager"),
 	("marketing@sagarlifts.com", "Marketing", "SL Sales"),
+	# Confirmed with Sagar Lifts 2026-09-30: sales@/marketing@ also get full
+	# SL Admin, on top of SL Sales above — not a guide/sheet role, an explicit
+	# ask outside the standard "Admin = Owner only" pattern documented elsewhere.
+	("marketing@sagarlifts.com", "Marketing", "SL Admin"),
 	("nidhi@sagarlifts.com", "nidhi", "SL Admin"),
 	("praharsh@sagarlifts.com", "Praharsh", "SL Admin"),
 	("pune@sagarlifts.com", "pune HO", "SL Manufacturing"),
 	("purchase@sagarlifts.com", "Arti", "SL Stores"),
 	("rakesh@sagarlifts.com", "Rakesh", "SL Manufacturing"),
 	("sales@sagarlifts.com", "Sales", "SL Sales"),
+	("sales@sagarlifts.com", "Sales", "SL Admin"),
 	("service@sagarlifts.com", "ranjana", "SL Service Manager"),
 	("stock@sagarlifts.com", "Sanoj", "SL Dispatch"),
 	("vaishali@sagarlifts.com", "Vaishali", "SL Billing"),
