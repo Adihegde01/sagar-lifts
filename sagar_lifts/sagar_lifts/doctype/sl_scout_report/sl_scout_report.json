@@ -1,0 +1,613 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "SCT-.YYYY.-.#####",
+ "creation": "2026-10-09 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "sb_scouter_details",
+  "scouter_name",
+  "submission_date",
+  "cb_scouter_details",
+  "visit_date",
+  "visit_week",
+  "area_location_scouted",
+  "sb_site_details",
+  "site_name",
+  "site_address_line_1",
+  "site_address_line_2",
+  "site_city",
+  "site_pin_code",
+  "nearest_landmark",
+  "cb_site_details",
+  "site_type",
+  "current_construction_stage",
+  "proposed_building_height",
+  "current_height_reached",
+  "estimated_floors_remaining",
+  "expected_completion_timeline",
+  "number_of_towers",
+  "project_scale",
+  "site_area_sqft",
+  "sb_developer_details",
+  "developer_builder_name",
+  "developer_company_type",
+  "developer_office_address",
+  "cb_developer_details",
+  "developer_website",
+  "other_projects_by_same_developer",
+  "developer_reputation",
+  "developer_financial_standing",
+  "sb_key_contacts",
+  "site_supervisor_name",
+  "site_supervisor_contact",
+  "site_engineer_name",
+  "site_engineer_contact",
+  "cb_key_contacts_1",
+  "purchase_department_contact_name",
+  "purchase_department_contact_number",
+  "purchase_department_email",
+  "accounts_contact_name",
+  "accounts_contact_number",
+  "cb_key_contacts_2",
+  "decision_maker_name",
+  "decision_maker_designation",
+  "decision_maker_contact",
+  "decision_maker_email",
+  "best_time_to_reach_decision_maker",
+  "gatekeeper_name",
+  "sb_lift_requirement",
+  "lift_required",
+  "estimated_number_of_lifts",
+  "estimated_height_needed",
+  "estimated_capacity_needed",
+  "cb_lift_requirement",
+  "lift_required_from",
+  "lift_requirement_urgency",
+  "budget_discussed",
+  "approximate_budget",
+  "tender_or_direct",
+  "decision_process",
+  "sb_competitor_info",
+  "competitor_lift_present_on_site",
+  "competitor_name",
+  "competitor_lift_model",
+  "cb_competitor_info",
+  "competitor_rate",
+  "competitor_relationship_assessment",
+  "our_advantage_at_this_site",
+  "competitor_weakness_noted",
+  "sb_scouter_assessment",
+  "lead_quality_rating",
+  "recommended_action",
+  "scouter_observations",
+  "cb_scouter_assessment",
+  "special_notes_for_calling_team",
+  "special_notes_for_senior_team",
+  "photo_evidence_attached",
+  "follow_up_visit_required",
+  "follow_up_visit_date",
+  "sb_admin_processing",
+  "assigned_to_caller",
+  "assignment_date",
+  "cb_admin_processing",
+  "lead_created",
+  "lead_reference",
+  "admin_notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "sb_scouter_details",
+   "fieldtype": "Section Break",
+   "label": "Scouter Details"
+  },
+  {
+   "fieldname": "scouter_name",
+   "label": "Scouter Name",
+   "fieldtype": "Link",
+   "reqd": 1,
+   "options": "User"
+  },
+  {
+   "fieldname": "submission_date",
+   "label": "Submission Date",
+   "fieldtype": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cb_scouter_details",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "visit_date",
+   "label": "Visit Date",
+   "fieldtype": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "visit_week",
+   "label": "Visit Week",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "area_location_scouted",
+   "label": "Area / Location Scouted",
+   "fieldtype": "Data",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sb_site_details",
+   "fieldtype": "Section Break",
+   "label": "Site Details"
+  },
+  {
+   "fieldname": "site_name",
+   "label": "Site Name",
+   "fieldtype": "Data",
+   "reqd": 1
+  },
+  {
+   "fieldname": "site_address_line_1",
+   "label": "Site Address Line 1",
+   "fieldtype": "Data",
+   "reqd": 1
+  },
+  {
+   "fieldname": "site_address_line_2",
+   "label": "Site Address Line 2",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "site_city",
+   "label": "Site City",
+   "fieldtype": "Data",
+   "reqd": 1
+  },
+  {
+   "fieldname": "site_pin_code",
+   "label": "Site PIN Code",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "nearest_landmark",
+   "label": "Nearest Landmark",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "cb_site_details",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "site_type",
+   "label": "Site Type",
+   "fieldtype": "Select",
+   "reqd": 1,
+   "options": "Residential\nCommercial\nMixed Use\nIndustrial\nInfrastructure"
+  },
+  {
+   "fieldname": "current_construction_stage",
+   "label": "Current Construction Stage",
+   "fieldtype": "Select",
+   "reqd": 1,
+   "options": "Foundation\nPlinth\nLower Floors\nMid Floors\nUpper Floors\nNear Completion\nCompleted"
+  },
+  {
+   "fieldname": "proposed_building_height",
+   "label": "Proposed Building Height (floors)",
+   "fieldtype": "Int",
+   "reqd": 1
+  },
+  {
+   "fieldname": "current_height_reached",
+   "label": "Current Height Reached (floors)",
+   "fieldtype": "Int"
+  },
+  {
+   "fieldname": "estimated_floors_remaining",
+   "label": "Estimated Floors Remaining",
+   "fieldtype": "Int"
+  },
+  {
+   "fieldname": "expected_completion_timeline",
+   "label": "Expected Completion Timeline",
+   "fieldtype": "Select",
+   "options": "\n0-6 Months\n6-12 Months\n1-2 Years\n2+ Years\nUnknown"
+  },
+  {
+   "fieldname": "number_of_towers",
+   "label": "Number of Towers",
+   "fieldtype": "Int"
+  },
+  {
+   "fieldname": "project_scale",
+   "label": "Project Scale",
+   "fieldtype": "Select",
+   "options": "\nSmall (under 10 floors)\nMedium (10-20 floors)\nLarge (20-40 floors)\nVery Large (40+ floors)"
+  },
+  {
+   "fieldname": "site_area_sqft",
+   "label": "Site Area (sq ft approx)",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "sb_developer_details",
+   "fieldtype": "Section Break",
+   "label": "Developer Details"
+  },
+  {
+   "fieldname": "developer_builder_name",
+   "label": "Developer / Builder Name",
+   "fieldtype": "Data",
+   "reqd": 1
+  },
+  {
+   "fieldname": "developer_company_type",
+   "label": "Developer Company Type",
+   "fieldtype": "Select",
+   "options": "\nIndividual Builder\nSmall Developer\nMid-size Developer\nLarge Developer\nCorporate Developer\nGovernment"
+  },
+  {
+   "fieldname": "developer_office_address",
+   "label": "Developer Office Address",
+   "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "cb_developer_details",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "developer_website",
+   "label": "Developer Website",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "other_projects_by_same_developer",
+   "label": "Other Projects by Same Developer",
+   "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "developer_reputation",
+   "label": "Developer Reputation (field assessment)",
+   "fieldtype": "Select",
+   "options": "\nExcellent\nGood\nAverage\nUnknown\nConcerns Noted"
+  },
+  {
+   "fieldname": "developer_financial_standing",
+   "label": "Developer Financial Standing (observation)",
+   "fieldtype": "Select",
+   "options": "\nAppears Strong\nAppears Average\nAppears Stretched\nUnknown"
+  },
+  {
+   "fieldname": "sb_key_contacts",
+   "fieldtype": "Section Break",
+   "label": "Key Contacts at Site"
+  },
+  {
+   "fieldname": "site_supervisor_name",
+   "label": "Site Supervisor Name",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "site_supervisor_contact",
+   "label": "Site Supervisor Contact",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "site_engineer_name",
+   "label": "Site Engineer Name",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "site_engineer_contact",
+   "label": "Site Engineer Contact",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "cb_key_contacts_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "purchase_department_contact_name",
+   "label": "Purchase Department Contact Name",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "purchase_department_contact_number",
+   "label": "Purchase Department Contact Number",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "purchase_department_email",
+   "label": "Purchase Department Email",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "accounts_contact_name",
+   "label": "Accounts Contact Name",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "accounts_contact_number",
+   "label": "Accounts Contact Number",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "cb_key_contacts_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "decision_maker_name",
+   "label": "Decision Maker Name",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "decision_maker_designation",
+   "label": "Decision Maker Designation",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "decision_maker_contact",
+   "label": "Decision Maker Contact",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "decision_maker_email",
+   "label": "Decision Maker Email",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "best_time_to_reach_decision_maker",
+   "label": "Best Time to Reach Decision Maker",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "gatekeeper_name",
+   "label": "Gatekeeper Name (if any)",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "sb_lift_requirement",
+   "fieldtype": "Section Break",
+   "label": "Lift Requirement Assessment"
+  },
+  {
+   "fieldname": "lift_required",
+   "label": "Lift Required",
+   "fieldtype": "Select",
+   "reqd": 1,
+   "options": "Yes — Definite\nYes — Probable\nPossible\nNo\nAlready Has Lift"
+  },
+  {
+   "fieldname": "estimated_number_of_lifts",
+   "label": "Estimated Number of Lifts",
+   "fieldtype": "Int"
+  },
+  {
+   "fieldname": "estimated_height_needed",
+   "label": "Estimated Height Needed (m)",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "estimated_capacity_needed",
+   "label": "Estimated Capacity Needed (kg)",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "cb_lift_requirement",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "lift_required_from",
+   "label": "Lift Required From (timeline)",
+   "fieldtype": "Select",
+   "options": "\nImmediate\n1-3 Months\n3-6 Months\n6-12 Months\n12+ Months\nUnknown"
+  },
+  {
+   "fieldname": "lift_requirement_urgency",
+   "label": "Lift Requirement Urgency",
+   "fieldtype": "Select",
+   "options": "\nHot\nWarm\nCold\nNot Applicable"
+  },
+  {
+   "fieldname": "budget_discussed",
+   "label": "Budget Discussed",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "approximate_budget",
+   "label": "Approximate Budget Mentioned (₹)",
+   "fieldtype": "Currency"
+  },
+  {
+   "fieldname": "tender_or_direct",
+   "label": "Tender or Direct",
+   "fieldtype": "Select",
+   "options": "\nDirect Purchase\nTender\nUnknown"
+  },
+  {
+   "fieldname": "decision_process",
+   "label": "Decision Process",
+   "fieldtype": "Select",
+   "options": "\nSingle Decision Maker\nCommittee\nManagement Approval Needed\nUnknown"
+  },
+  {
+   "fieldname": "sb_competitor_info",
+   "fieldtype": "Section Break",
+   "label": "Competitor Information"
+  },
+  {
+   "fieldname": "competitor_lift_present_on_site",
+   "label": "Competitor Lift Present on Site",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "competitor_name",
+   "label": "Competitor Name",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "competitor_lift_model",
+   "label": "Competitor Lift Model",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "cb_competitor_info",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "competitor_rate",
+   "label": "Competitor Rate (if known)",
+   "fieldtype": "Currency"
+  },
+  {
+   "fieldname": "competitor_relationship_assessment",
+   "label": "Competitor Relationship Assessment",
+   "fieldtype": "Select",
+   "options": "\nNew to Them\nExisting Supplier\nTrial Basis\nVery Loyal to Competitor\nUnknown"
+  },
+  {
+   "fieldname": "our_advantage_at_this_site",
+   "label": "Our Advantage at This Site",
+   "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "competitor_weakness_noted",
+   "label": "Competitor Weakness Noted",
+   "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "sb_scouter_assessment",
+   "fieldtype": "Section Break",
+   "label": "Scouter Assessment and Notes"
+  },
+  {
+   "fieldname": "lead_quality_rating",
+   "label": "Lead Quality Rating",
+   "fieldtype": "Select",
+   "reqd": 1,
+   "options": "A — Hot Lead\nB — Good Lead\nC — Average Lead\nD — Weak Lead"
+  },
+  {
+   "fieldname": "recommended_action",
+   "label": "Recommended Action",
+   "fieldtype": "Select",
+   "reqd": 1,
+   "options": "Call Immediately\nSchedule for Next Week\nAdd to Pipeline\nNo Action Needed"
+  },
+  {
+   "fieldname": "scouter_observations",
+   "label": "Scouter Observations",
+   "fieldtype": "Text",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cb_scouter_assessment",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "special_notes_for_calling_team",
+   "label": "Special Notes for Calling Team",
+   "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "special_notes_for_senior_team",
+   "label": "Special Notes for Senior Team",
+   "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "photo_evidence_attached",
+   "label": "Photo Evidence Attached",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "follow_up_visit_required",
+   "label": "Follow Up Visit Required",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "follow_up_visit_date",
+   "label": "Follow Up Visit Date",
+   "fieldtype": "Date"
+  },
+  {
+   "fieldname": "sb_admin_processing",
+   "fieldtype": "Section Break",
+   "label": "Admin Processing"
+  },
+  {
+   "fieldname": "assigned_to_caller",
+   "label": "Assigned to Caller",
+   "fieldtype": "Link",
+   "options": "User"
+  },
+  {
+   "fieldname": "assignment_date",
+   "label": "Assignment Date",
+   "fieldtype": "Date"
+  },
+  {
+   "fieldname": "cb_admin_processing",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "lead_created",
+   "label": "Lead Created",
+   "fieldtype": "Check",
+   "description": "Ticked once Sales Admin converts this report into a Lead"
+  },
+  {
+   "fieldname": "lead_reference",
+   "label": "Lead Reference",
+   "fieldtype": "Link",
+   "options": "Lead",
+   "description": "The Lead this report was converted into (classic ERPNext Lead — 'CRM Lead' in the plan)"
+  },
+  {
+   "fieldname": "admin_notes",
+   "label": "Admin Notes",
+   "fieldtype": "Small Text"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-10-09 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "sagar-lifts",
+ "name": "SL Scout Report",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "SL Sales",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "submit": 1,
+   "email": 1,
+   "print": 1,
+   "report": 1
+  },
+  {
+   "role": "SL Admin",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "submit": 1,
+   "cancel": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "site_name"
+}
