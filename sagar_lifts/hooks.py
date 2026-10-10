@@ -113,6 +113,7 @@ after_install = [
 	"sagar_lifts.sagar_lifts.setup.role_profiles.setup_role_profiles",
 	"sagar_lifts.sagar_lifts.setup.sales_module_crm.setup_sales_module_crm_fields",
 	"sagar_lifts.sagar_lifts.setup.lead_sources.setup_lead_sources",
+	"sagar_lifts.sagar_lifts.setup.sales_module_notifications.setup_sales_module_notifications",
 ]
 
 # Uninstallation
@@ -278,7 +279,12 @@ scheduler_events = {
 	],
 	"cron": {
 		# Mondays 09:00 — weekly CL / Accounts Caller review reminders to SL Admin
-		"0 9 * * 1": ["sagar_lifts.sagar_lifts.collection.send_weekly_review_reminders"],
+		"0 9 * * 1": [
+			"sagar_lifts.sagar_lifts.collection.send_weekly_review_reminders",
+			"sagar_lifts.sagar_lifts.setup.sales_reminders.send_monday_sales_reminders",
+		],
+		# Fridays 09:00 — weekly sales review reminder to SL Admin
+		"0 9 * * 5": ["sagar_lifts.sagar_lifts.setup.sales_reminders.send_friday_sales_reminders"],
 	},
 }
 
