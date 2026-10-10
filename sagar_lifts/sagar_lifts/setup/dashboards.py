@@ -72,6 +72,50 @@ NUMBER_CARDS = [
 		# still need someone to add the actual components and submit.
 		"filters_json": '[["BOM","docstatus","=",0]]',
 	},
+	# --- Sales Module Guide, Section 8.1 ---------------------------------
+	{
+		"name": "Total Active Leads",
+		"document_type": "Lead",
+		"function": "Count",
+		# Lead has no native "Lost" status in this version — "Do Not Contact"
+		# is the closest equivalent to the guide's "not Converted or Lost".
+		"filters_json": '[["Lead","status","not in",["Converted","Do Not Contact"]]]',
+	},
+	{
+		"name": "Hot Leads (A Rating)",
+		"document_type": "Lead",
+		"function": "Count",
+		"filters_json": '[["Lead","lead_quality","=","A Hot"]]',
+	},
+	{
+		"name": "Meetings This Week",
+		"document_type": "Lead",
+		"function": "Count",
+		# Guide lists this against Opportunity, but Meeting Scheduled/Meeting
+		# Date are Lead fields per the guide's own Section 4.3 table (see
+		# sales_module_notifications.py docstring for the same adaptation).
+		"filters_json": '[["Lead","meeting_scheduled","=",1]]',
+		"dynamic_filters_json": '[["Lead","meeting_date","Timespan","this week"]]',
+	},
+	{
+		"name": "Quotations Pending",
+		"document_type": "Quotation",
+		"function": "Count",
+		"filters_json": '[["Quotation","status","=","Open"]]',
+	},
+	{
+		"name": "Orders This Month",
+		"document_type": "Sales Order",
+		"function": "Count",
+		"filters_json": '[["Sales Order","docstatus","=",1]]',
+		"dynamic_filters_json": '[["Sales Order","transaction_date","Timespan","this month"]]',
+	},
+	{
+		"name": "Incentives Pending Payment",
+		"document_type": "SL Incentive Record",
+		"function": "Count",
+		"filters_json": '[["SL Incentive Record","incentive_paid","=",0]]',
+	},
 ]
 
 DASHBOARD_CHARTS = [
@@ -108,6 +152,50 @@ DASHBOARD_CHARTS = [
 		"timespan": "Last Year",
 		"filters_json": "[]",
 	},
+	# --- Sales Module Guide, Section 8.1 ---------------------------------
+	{
+		"name": "Leads by Source",
+		"chart_type": "Group By",
+		"document_type": "Lead",
+		"group_by_type": "Count",
+		"group_by_based_on": "utm_source",
+		"type": "Pie",
+		"timespan": "Last Year",
+		"filters_json": "[]",
+	},
+	{
+		"name": "Lead Quality Distribution",
+		"chart_type": "Group By",
+		"document_type": "Lead",
+		"group_by_type": "Count",
+		"group_by_based_on": "lead_quality",
+		"type": "Pie",
+		"timespan": "Last Year",
+		"filters_json": "[]",
+	},
+	{
+		"name": "Monthly Orders Confirmed",
+		"chart_type": "Count",
+		"document_type": "Sales Order",
+		"based_on": "transaction_date",
+		"time_interval": "Monthly",
+		"timeseries": 1,
+		"type": "Bar",
+		"timespan": "Last Year",
+		"filters_json": '[["Sales Order","docstatus","=",1]]',
+	},
+	{
+		# Guide calls this a Funnel chart — Frappe's Dashboard Chart has no
+		# Funnel type, so this uses Bar (closest available for stage counts).
+		"name": "Opportunities by Stage",
+		"chart_type": "Group By",
+		"document_type": "Opportunity",
+		"group_by_type": "Count",
+		"group_by_based_on": "status",
+		"type": "Bar",
+		"timespan": "Last Year",
+		"filters_json": "[]",
+	},
 ]
 
 # dashboard_name -> (card names, chart names)
@@ -141,6 +229,25 @@ DASHBOARDS = {
 	"Sagar Lifts - Service Manager": (
 		["PM Overdue This Month", "Active AMC Orders"],
 		["Orders by Status"],
+	),
+	# Sales Module Guide, Section 8.1 — shared by SL Sales and SL Admin
+	# (is_public=1 already scopes visibility by each card's own doctype
+	# permissions, so no separate per-role copy is needed here).
+	"Sales Pipeline": (
+		[
+			"Total Active Leads",
+			"Hot Leads (A Rating)",
+			"Meetings This Week",
+			"Quotations Pending",
+			"Orders This Month",
+			"Incentives Pending Payment",
+		],
+		[
+			"Leads by Source",
+			"Lead Quality Distribution",
+			"Monthly Orders Confirmed",
+			"Opportunities by Stage",
+		],
 	),
 }
 

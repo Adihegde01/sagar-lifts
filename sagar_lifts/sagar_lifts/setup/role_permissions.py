@@ -23,6 +23,31 @@ import frappe
 from frappe.permissions import setup_custom_perms
 
 CORE_DOCTYPE_GRID = {
+	# Sales Module Guide, Section 9 — adapted from its literal 5-tier grid
+	# (SL Scouter/Caller/Supervisor/Senior/Admin) to the flat SL Sales/SL
+	# Admin roles this build uses. Without these, SL Sales/SL Admin had zero
+	# Custom DocPerm on these three ERPNext-native doctypes and couldn't
+	# open the Lead list at all.
+	"Lead": {
+		"SL Admin": dict(read=1, write=1, create=1, delete=1),
+		# Leads can originate from any source (scouting, referral, walk-in,
+		# online) — SL Sales creates/updates them directly, same as the
+		# guide's Caller/Scouter tiers.
+		"SL Sales": dict(read=1, write=1, create=1),
+	},
+	"Opportunity": {
+		"SL Admin": dict(read=1, write=1, create=1, delete=1),
+		# Guide, Section 9 STEP 9: "They cannot create new Opportunities —
+		# Admin does that from Leads." SL Sales gets write (to log meeting
+		# notes/outcomes) but not create.
+		"SL Sales": dict(read=1, write=1),
+	},
+	"Quotation": {
+		"SL Admin": dict(read=1, write=1, create=1, delete=1, submit=1, cancel=1),
+		# Guide, Section 2.2 MUST / Section 9 NEVER: "Sales Admin must be the
+		# only person who can generate a Quotation." SL Sales gets read-only.
+		"SL Sales": dict(read=1),
+	},
 	# Not one of the guide's four core doctypes, but Purchase Order needs at
 	# least this to be usable at all — Section 8.2: Stores raises the PO,
 	# Stores Manager (also SL Stores) approves it; SL Admin has full access.

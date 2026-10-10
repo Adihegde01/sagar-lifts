@@ -114,6 +114,7 @@ after_install = [
 	"sagar_lifts.sagar_lifts.setup.sales_module_crm.setup_sales_module_crm_fields",
 	"sagar_lifts.sagar_lifts.setup.lead_sources.setup_lead_sources",
 	"sagar_lifts.sagar_lifts.setup.sales_module_notifications.setup_sales_module_notifications",
+	"sagar_lifts.sagar_lifts.setup.sales_module_reports.setup_sales_module_reports",
 ]
 
 # Uninstallation
