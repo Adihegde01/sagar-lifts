@@ -94,8 +94,8 @@ NUMBER_CARDS = [
 		# Guide lists this against Opportunity, but Meeting Scheduled/Meeting
 		# Date are Lead fields per the guide's own Section 4.3 table (see
 		# sales_module_notifications.py docstring for the same adaptation).
-		"filters_json": '[["Lead","meeting_scheduled","=",1]]',
-		"dynamic_filters_json": '[["Lead","meeting_date","Timespan","this week"]]',
+		"filters_json": '[["Lead","meeting_scheduled","=",1],["Lead","meeting_date","Timespan","this week"]]',
+		"dynamic_filters_json": "[]",
 	},
 	{
 		"name": "Quotations Pending",
@@ -107,8 +107,9 @@ NUMBER_CARDS = [
 		"name": "Orders This Month",
 		"document_type": "Sales Order",
 		"function": "Count",
-		"filters_json": '[["Sales Order","docstatus","=",1]]',
-		"dynamic_filters_json": '[["Sales Order","transaction_date","Timespan","this month"]]',
+		"filters_json": '[["Sales Order","docstatus","=",1],'
+		'["Sales Order","transaction_date","Timespan","this month"]]',
+		"dynamic_filters_json": "[]",
 	},
 	{
 		"name": "Incentives Pending Payment",
