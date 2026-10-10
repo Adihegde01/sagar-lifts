@@ -1,0 +1,376 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "INC-.YYYY.-.#####",
+ "creation": "2026-10-10 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "sb_order_reference",
+  "sales_order",
+  "developer_name",
+  "site_name",
+  "order_confirmation_date",
+  "cb_order_reference",
+  "contract_value",
+  "opportunity_reference",
+  "quotation_reference",
+  "sb_fixed_incentive",
+  "total_incentive_amount",
+  "incentive_basis",
+  "cb_fixed_incentive",
+  "approved_by",
+  "approval_date",
+  "sb_team_involvement",
+  "scouter_involved",
+  "scouter_name",
+  "scouter_share",
+  "scouter_share_percent",
+  "cb_team_involvement_1",
+  "caller_involved",
+  "caller_name",
+  "caller_share",
+  "caller_share_percent",
+  "cb_team_involvement_2",
+  "senior_involved",
+  "senior_name",
+  "senior_share",
+  "senior_share_percent",
+  "cb_team_involvement_3",
+  "admin_involved",
+  "admin_name",
+  "admin_share",
+  "admin_share_percent",
+  "cb_team_involvement_4",
+  "additional_member_1",
+  "additional_member_1_share",
+  null,
+  "total_shares_allocated",
+  "total_percent_allocated",
+  "cb_share_totals",
+  "balance_unallocated",
+  "sb_payment_tracking",
+  "incentive_paid",
+  "payment_date",
+  "payment_mode",
+  "cb_payment_tracking",
+  "payment_reference",
+  "paid_by",
+  "individual_payment_confirmations",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "sb_order_reference",
+   "fieldtype": "Section Break",
+   "label": "Order Reference"
+  },
+  {
+   "fieldname": "sales_order",
+   "label": "Sales Order",
+   "fieldtype": "Link",
+   "reqd": 1,
+   "options": "Sales Order"
+  },
+  {
+   "fieldname": "developer_name",
+   "label": "Developer Name",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "site_name",
+   "label": "Site Name",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "order_confirmation_date",
+   "label": "Order Confirmation Date",
+   "fieldtype": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cb_order_reference",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contract_value",
+   "label": "Contract Value (₹)",
+   "fieldtype": "Currency"
+  },
+  {
+   "fieldname": "opportunity_reference",
+   "label": "Opportunity Reference",
+   "fieldtype": "Link",
+   "options": "Opportunity"
+  },
+  {
+   "fieldname": "quotation_reference",
+   "label": "Quotation Reference",
+   "fieldtype": "Link",
+   "options": "Quotation"
+  },
+  {
+   "fieldname": "sb_fixed_incentive",
+   "fieldtype": "Section Break",
+   "label": "Fixed Incentive Amount"
+  },
+  {
+   "fieldname": "total_incentive_amount",
+   "label": "Total Incentive Amount (₹)",
+   "fieldtype": "Currency",
+   "reqd": 1
+  },
+  {
+   "fieldname": "incentive_basis",
+   "label": "Incentive Basis",
+   "fieldtype": "Select",
+   "reqd": 1,
+   "options": "Fixed Standard Amount\nSpecial Incentive Approved by Management"
+  },
+  {
+   "fieldname": "cb_fixed_incentive",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approved_by",
+   "label": "Approved By",
+   "fieldtype": "Link",
+   "reqd": 1,
+   "options": "User"
+  },
+  {
+   "fieldname": "approval_date",
+   "label": "Approval Date",
+   "fieldtype": "Date"
+  },
+  {
+   "fieldname": "sb_team_involvement",
+   "fieldtype": "Section Break",
+   "label": "Team Involvement"
+  },
+  {
+   "fieldname": "scouter_involved",
+   "label": "Scouter Involved",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "scouter_name",
+   "label": "Scouter Name",
+   "fieldtype": "Link",
+   "options": "User"
+  },
+  {
+   "fieldname": "scouter_share",
+   "label": "Scouter Share (₹)",
+   "fieldtype": "Currency"
+  },
+  {
+   "fieldname": "scouter_share_percent",
+   "label": "Scouter Share %",
+   "fieldtype": "Percent"
+  },
+  {
+   "fieldname": "cb_team_involvement_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "caller_involved",
+   "label": "Caller Involved",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "caller_name",
+   "label": "Caller Name",
+   "fieldtype": "Link",
+   "options": "User"
+  },
+  {
+   "fieldname": "caller_share",
+   "label": "Caller Share (₹)",
+   "fieldtype": "Currency"
+  },
+  {
+   "fieldname": "caller_share_percent",
+   "label": "Caller Share %",
+   "fieldtype": "Percent"
+  },
+  {
+   "fieldname": "cb_team_involvement_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "senior_involved",
+   "label": "Senior Involved",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "senior_name",
+   "label": "Senior Name",
+   "fieldtype": "Link",
+   "options": "User"
+  },
+  {
+   "fieldname": "senior_share",
+   "label": "Senior Share (₹)",
+   "fieldtype": "Currency"
+  },
+  {
+   "fieldname": "senior_share_percent",
+   "label": "Senior Share %",
+   "fieldtype": "Percent"
+  },
+  {
+   "fieldname": "cb_team_involvement_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "admin_involved",
+   "label": "Admin Involved",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "admin_name",
+   "label": "Admin Name",
+   "fieldtype": "Link",
+   "options": "User"
+  },
+  {
+   "fieldname": "admin_share",
+   "label": "Admin Share (₹)",
+   "fieldtype": "Currency"
+  },
+  {
+   "fieldname": "admin_share_percent",
+   "label": "Admin Share %",
+   "fieldtype": "Percent"
+  },
+  {
+   "fieldname": "cb_team_involvement_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "additional_member_1",
+   "label": "Additional Member 1",
+   "fieldtype": "Link",
+   "options": "User"
+  },
+  {
+   "fieldname": "additional_member_1_share",
+   "label": "Additional Member 1 Share (₹)",
+   "fieldtype": "Currency"
+  },
+  {
+   "fieldname": null,
+   "fieldtype": "Section Break",
+   "label": "sb_share_totals"
+  },
+  {
+   "fieldname": "total_shares_allocated",
+   "label": "Total Shares Allocated (₹)",
+   "fieldtype": "Currency",
+   "description": "Auto-calculated from the shares above",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_percent_allocated",
+   "label": "Total % Allocated",
+   "fieldtype": "Percent",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cb_share_totals",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "balance_unallocated",
+   "label": "Balance Unallocated (₹)",
+   "fieldtype": "Currency",
+   "description": "Must be zero before this record can be submitted",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sb_payment_tracking",
+   "fieldtype": "Section Break",
+   "label": "Payment Tracking"
+  },
+  {
+   "fieldname": "incentive_paid",
+   "label": "Incentive Paid",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "payment_date",
+   "label": "Payment Date",
+   "fieldtype": "Date"
+  },
+  {
+   "fieldname": "payment_mode",
+   "label": "Payment Mode",
+   "fieldtype": "Select",
+   "options": "\nCash\nBank Transfer\nAdded to Salary\nCheque"
+  },
+  {
+   "fieldname": "cb_payment_tracking",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payment_reference",
+   "label": "Payment Reference",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "paid_by",
+   "label": "Paid By",
+   "fieldtype": "Link",
+   "options": "User"
+  },
+  {
+   "fieldname": "individual_payment_confirmations",
+   "label": "Individual Payment Confirmations",
+   "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "notes",
+   "label": "Notes",
+   "fieldtype": "Small Text"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-10-10 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "sagar-lifts",
+ "name": "SL Incentive Record",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "SL Sales",
+   "read": 1,
+   "email": 1,
+   "print": 1,
+   "report": 1
+  },
+  {
+   "role": "SL Admin",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "submit": 1,
+   "cancel": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "sales_order"
+}
