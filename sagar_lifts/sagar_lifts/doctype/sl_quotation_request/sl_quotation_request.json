@@ -1,0 +1,463 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "QTR-.YYYY.-.#####",
+ "creation": "2026-10-10 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "sb_request_details",
+  "requested_by",
+  "request_date",
+  "request_type",
+  "cb_request_details",
+  "lead_reference",
+  "scout_report_reference",
+  "sb_developer_site",
+  "developer_name",
+  "developer_company",
+  "developer_contact_name",
+  "developer_contact_number",
+  "developer_email",
+  "cb_developer_site",
+  "developer_gstin",
+  "developer_office_address",
+  "site_name",
+  "site_address",
+  "site_city",
+  "sb_lift_requirement",
+  "lift_type_required",
+  "number_of_lifts",
+  "required_height",
+  "required_capacity",
+  "cb_lift_requirement",
+  "cabin_size_required",
+  "special_requirements",
+  "required_from_date",
+  "urgency",
+  "sb_commercial",
+  "budget_discussed",
+  "approximate_budget",
+  "competitor_rates_known",
+  "cb_commercial",
+  "competitor_rate",
+  "key_decision_criteria",
+  "payment_terms_expected_by_developer",
+  "free_maintenance_expected",
+  "sb_meeting_history",
+  "previous_interactions_summary",
+  "number_of_follow_up_calls_done",
+  "developer_response_level",
+  "cb_meeting_history",
+  "meeting_done",
+  "meeting_date",
+  "meeting_outcome",
+  "senior_meeting_required",
+  "sb_incentive_eligibility",
+  "scouter_involved",
+  "scouter_name",
+  "caller_involved",
+  "caller_name",
+  "cb_incentive_eligibility",
+  "senior_involved",
+  "senior_name",
+  "additional_team_member",
+  "notes_on_involvement",
+  "sb_admin_processing",
+  "quotation_generated",
+  "quotation_reference",
+  "quotation_date",
+  "cb_admin_processing",
+  "quotation_sent_to",
+  "quotation_valid_till",
+  "admin_notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "sb_request_details",
+   "fieldtype": "Section Break",
+   "label": "Request Details"
+  },
+  {
+   "fieldname": "requested_by",
+   "label": "Requested By",
+   "fieldtype": "Link",
+   "reqd": 1,
+   "options": "User"
+  },
+  {
+   "fieldname": "request_date",
+   "label": "Request Date",
+   "fieldtype": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "request_type",
+   "label": "Request Type",
+   "fieldtype": "Select",
+   "reqd": 1,
+   "options": "From Caller\nFrom Scouter\nWalk-in Inquiry\nReferral\nRepeat Developer"
+  },
+  {
+   "fieldname": "cb_request_details",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "lead_reference",
+   "label": "Lead Reference",
+   "fieldtype": "Link",
+   "options": "Lead"
+  },
+  {
+   "fieldname": "scout_report_reference",
+   "label": "Scout Report Reference",
+   "fieldtype": "Link",
+   "options": "SL Scout Report"
+  },
+  {
+   "fieldname": "sb_developer_site",
+   "fieldtype": "Section Break",
+   "label": "Developer and Site"
+  },
+  {
+   "fieldname": "developer_name",
+   "label": "Developer Name",
+   "fieldtype": "Data",
+   "reqd": 1
+  },
+  {
+   "fieldname": "developer_company",
+   "label": "Developer Company",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "developer_contact_name",
+   "label": "Developer Contact Name",
+   "fieldtype": "Data",
+   "reqd": 1
+  },
+  {
+   "fieldname": "developer_contact_number",
+   "label": "Developer Contact Number",
+   "fieldtype": "Data",
+   "reqd": 1
+  },
+  {
+   "fieldname": "developer_email",
+   "label": "Developer Email",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "cb_developer_site",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "developer_gstin",
+   "label": "Developer GSTIN",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "developer_office_address",
+   "label": "Developer Office Address",
+   "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "site_name",
+   "label": "Site Name",
+   "fieldtype": "Data",
+   "reqd": 1
+  },
+  {
+   "fieldname": "site_address",
+   "label": "Site Address",
+   "fieldtype": "Small Text",
+   "reqd": 1
+  },
+  {
+   "fieldname": "site_city",
+   "label": "Site City",
+   "fieldtype": "Data",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sb_lift_requirement",
+   "fieldtype": "Section Break",
+   "label": "Lift Requirement"
+  },
+  {
+   "fieldname": "lift_type_required",
+   "label": "Lift Type Required",
+   "fieldtype": "Select",
+   "reqd": 1,
+   "options": "Construction\nPermanent\nRe-erection\nAMC Only"
+  },
+  {
+   "fieldname": "number_of_lifts",
+   "label": "Number of Lifts",
+   "fieldtype": "Int",
+   "reqd": 1
+  },
+  {
+   "fieldname": "required_height",
+   "label": "Required Height (m)",
+   "fieldtype": "Float",
+   "reqd": 1
+  },
+  {
+   "fieldname": "required_capacity",
+   "label": "Required Capacity (kg)",
+   "fieldtype": "Float",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cb_lift_requirement",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cabin_size_required",
+   "label": "Cabin Size Required",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "special_requirements",
+   "label": "Special Requirements",
+   "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "required_from_date",
+   "label": "Required From Date",
+   "fieldtype": "Date"
+  },
+  {
+   "fieldname": "urgency",
+   "label": "Urgency",
+   "fieldtype": "Select",
+   "reqd": 1,
+   "options": "Immediate\nWithin 1 Month\nWithin 3 Months\nFlexible"
+  },
+  {
+   "fieldname": "sb_commercial",
+   "fieldtype": "Section Break",
+   "label": "Commercial"
+  },
+  {
+   "fieldname": "budget_discussed",
+   "label": "Budget Discussed",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "approximate_budget",
+   "label": "Approximate Budget (₹)",
+   "fieldtype": "Currency"
+  },
+  {
+   "fieldname": "competitor_rates_known",
+   "label": "Competitor Rates Known",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "cb_commercial",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "competitor_rate",
+   "label": "Competitor Rate (₹)",
+   "fieldtype": "Currency"
+  },
+  {
+   "fieldname": "key_decision_criteria",
+   "label": "Key Decision Criteria",
+   "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "payment_terms_expected_by_developer",
+   "label": "Payment Terms Expected by Developer",
+   "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "free_maintenance_expected",
+   "label": "Free Maintenance Expected (months)",
+   "fieldtype": "Int"
+  },
+  {
+   "fieldname": "sb_meeting_history",
+   "fieldtype": "Section Break",
+   "label": "Meeting and Follow Up History"
+  },
+  {
+   "fieldname": "previous_interactions_summary",
+   "label": "Previous Interactions Summary",
+   "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "number_of_follow_up_calls_done",
+   "label": "Number of Follow Up Calls Done",
+   "fieldtype": "Int"
+  },
+  {
+   "fieldname": "developer_response_level",
+   "label": "Developer Response Level",
+   "fieldtype": "Select",
+   "options": "\nVery Interested\nInterested\nNeutral\nHesitant\nNot Interested"
+  },
+  {
+   "fieldname": "cb_meeting_history",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "meeting_done",
+   "label": "Meeting Done",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "meeting_date",
+   "label": "Meeting Date",
+   "fieldtype": "Date"
+  },
+  {
+   "fieldname": "meeting_outcome",
+   "label": "Meeting Outcome",
+   "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "senior_meeting_required",
+   "label": "Senior Meeting Required",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "sb_incentive_eligibility",
+   "fieldtype": "Section Break",
+   "label": "Incentive Eligibility"
+  },
+  {
+   "fieldname": "scouter_involved",
+   "label": "Scouter Involved",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "scouter_name",
+   "label": "Scouter Name",
+   "fieldtype": "Link",
+   "options": "User"
+  },
+  {
+   "fieldname": "caller_involved",
+   "label": "Caller Involved",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "caller_name",
+   "label": "Caller Name",
+   "fieldtype": "Link",
+   "options": "User"
+  },
+  {
+   "fieldname": "cb_incentive_eligibility",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "senior_involved",
+   "label": "Senior Involved",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "senior_name",
+   "label": "Senior Name",
+   "fieldtype": "Link",
+   "options": "User"
+  },
+  {
+   "fieldname": "additional_team_member",
+   "label": "Additional Team Member",
+   "fieldtype": "Link",
+   "options": "User"
+  },
+  {
+   "fieldname": "notes_on_involvement",
+   "label": "Notes on Involvement",
+   "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "sb_admin_processing",
+   "fieldtype": "Section Break",
+   "label": "Admin Processing"
+  },
+  {
+   "fieldname": "quotation_generated",
+   "label": "Quotation Generated",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "quotation_reference",
+   "label": "Quotation Reference",
+   "fieldtype": "Link",
+   "options": "Quotation",
+   "description": "The actual Quotation document Sales Admin generates from this request"
+  },
+  {
+   "fieldname": "quotation_date",
+   "label": "Quotation Date",
+   "fieldtype": "Date"
+  },
+  {
+   "fieldname": "cb_admin_processing",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "quotation_sent_to",
+   "label": "Quotation Sent To",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "quotation_valid_till",
+   "label": "Quotation Valid Till",
+   "fieldtype": "Date"
+  },
+  {
+   "fieldname": "admin_notes",
+   "label": "Admin Notes",
+   "fieldtype": "Small Text"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-10-10 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "sagar-lifts",
+ "name": "SL Quotation Request",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "SL Sales",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "submit": 1,
+   "email": 1,
+   "print": 1,
+   "report": 1
+  },
+  {
+   "role": "SL Admin",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "submit": 1,
+   "cancel": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "developer_name"
+}
