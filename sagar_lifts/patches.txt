@@ -43,3 +43,4 @@ sagar_lifts.patches.v1_0.role_permissions #2026-10-07 accounts caller
 sagar_lifts.patches.v1_0.notification_specification #2026-10-08 collection notifications 1-4
 sagar_lifts.patches.v1_0.backfill_challan_date
 sagar_lifts.patches.v1_0.client_scripts #2026-10-08 log collection update button
+sagar_lifts.patches.v1_0.maintenance_visit_pm_fields #2026-10-15 default service person

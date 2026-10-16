@@ -434,7 +434,19 @@ CUSTOM_FIELDS["Maintenance Visit"] += [
 ]
 
 
+def _ensure_default_service_person():
+	# Every visit's auto-added Purposes row (doc_events.maintenance_visit_add_purpose)
+	# needs a Sales Person; technicians are Users, not Sales Persons.
+	if frappe.db.exists("Sales Person", "Default Technician"):
+		return
+	root = frappe.db.get_value("Sales Person", {"is_group": 1, "parent_sales_person": ["in", ("", None)]})
+	frappe.get_doc(
+		{"doctype": "Sales Person", "sales_person_name": "Default Technician", "parent_sales_person": root}
+	).insert(ignore_permissions=True)
+
+
 def setup_maintenance_visit_customization():
+	_ensure_default_service_person()
 	# PM Visit's column break went away when Customer Signature moved out.
 	frappe.db.delete("Custom Field", {"dt": "Maintenance Visit", "fieldname": "sl_pm_visit_col"})
 	create_custom_fields(CUSTOM_FIELDS, ignore_validate=True)

@@ -224,6 +224,27 @@ def sales_order_set_amc_start_date(doc, method=None):
 		doc.amc_start_date = frappe.utils.add_months(doc.handover_date, cint(doc.free_maintenance_months))
 
 
+DEFAULT_SERVICE_PERSON = "Default Technician"  # created by setup_maintenance_visit_customization
+
+
+def maintenance_visit_add_purpose(doc, method=None):
+	# ERPNext refuses a visit with an empty Purposes table, and the Technician
+	# Portal (or any API caller) never sends one — derive the row from the
+	# visit itself. before_validate, so it lands before ERPNext's own check.
+	if doc.get("purposes"):
+		return
+	doc.append(
+		"purposes",
+		{
+			"item_code": frappe.db.get_value("Sales Order", doc.job_id, "lift_model") if doc.job_id else None,
+			"service_person": DEFAULT_SERVICE_PERSON,
+			# Work Done Details is itself mandatory; "-" only keeps ERPNext's
+			# row check from masking that clearer error.
+			"work_done": doc.work_done_details or "-",
+		},
+	)
+
+
 def maintenance_visit_set_quarter(doc, method=None):
 	# Quarter/PM Month default from the visit date (Indian FY: Apr-Mar) but stay editable.
 	if not doc.mntc_date:

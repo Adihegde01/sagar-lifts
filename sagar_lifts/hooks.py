@@ -250,6 +250,7 @@ doc_events = {
 		"on_cancel": "sagar_lifts.sagar_lifts.doc_events.purchase_invoice_update_order_labour_bills",
 	},
 	"Maintenance Visit": {
+		"before_validate": "sagar_lifts.sagar_lifts.doc_events.maintenance_visit_add_purpose",
 		"validate": [
 			"sagar_lifts.sagar_lifts.doc_events.maintenance_visit_set_quarter",
 			"sagar_lifts.sagar_lifts.doc_events.maintenance_visit_set_total_hours",
