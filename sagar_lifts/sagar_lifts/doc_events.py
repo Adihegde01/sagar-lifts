@@ -141,15 +141,56 @@ def sales_order_propagate_outstanding_flag(doc, method=None):
 			frappe.db.set_value("Sales Order", name, {"outstanding_flag": 1, "outstanding_flag_date": today()})
 
 
-PRODUCTION_STAGES = [
-	"Design & BOM",
-	"Frame Fabrication",
-	"Cage Assembly",
-	"Electrical",
-	"Testing",
-	"QC Check",
-	"Ready for Dispatch",
+# One Task per step of the job, in lifecycle order, with the role that does it
+# (deployment workflow + Sales Module guide Section 10). Each task is assigned
+# to every active user holding that role; "collection_lead" means the order's
+# own Collection Lead. The first seven are the production stages (No-Code
+# Guide Section 3.1).
+PROJECT_TASKS = [
+	("Raise Advance PI", "SL Billing"),
+	("Create Incentive Record", "SL Sales Admin"),
+	("Design & BOM", "SL Manufacturing"),
+	("Procure components (Purchase Orders)", "SL Stores"),
+	("Frame Fabrication", "SL Manufacturing"),
+	("Cage Assembly", "SL Manufacturing"),
+	("Electrical", "SL Manufacturing"),
+	("Testing", "SL Manufacturing"),
+	("QC Check", "SL Manufacturing"),
+	("Ready for Dispatch", "SL Manufacturing"),
+	("Dispatch: challan, vehicle and E-Way Bill", "SL Dispatch"),
+	("Raise On Delivery PI", "SL Billing"),
+	("Collect signed challan from site", "SL Dispatch"),
+	("Installation and erection", "SL Manufacturing"),
+	("Handover checklist and handover", "SL Manufacturing"),
+	("Raise Handover PI", "SL Billing"),
+	("Create Maintenance Schedule (PM visits)", "SL Service Manager"),
+	("Payment follow-up with developer", "collection_lead"),
 ]
+
+
+
+def task_assignees(order, role):
+	if role == "collection_lead":
+		return [order.collection_lead] if order.get("collection_lead") else []
+	from frappe.utils.user import get_users_with_role
+
+	return sorted(u for u in get_users_with_role(role) if u != "Administrator")
+
+
+def create_project_tasks(order, project):
+	from frappe.desk.form.assign_to import _add as assign
+
+	for subject, role in PROJECT_TASKS:
+		task = frappe.get_doc(
+			{"doctype": "Task", "project": project, "subject": subject, "status": "Open",
+			 "description": f"{order.job_name or order.name}: {subject}"}
+		).insert(ignore_permissions=True)
+		users = task_assignees(order, role)
+		if users:
+			assign(
+				{"assign_to": users, "doctype": "Task", "name": task.name, "description": task.description},
+				ignore_permissions=True,
+			)
 
 
 def sales_order_create_project(doc, method=None):
@@ -178,10 +219,7 @@ def sales_order_create_project(doc, method=None):
 	)
 	project.insert(ignore_permissions=True)
 
-	for stage in PRODUCTION_STAGES:
-		frappe.get_doc(
-			{"doctype": "Task", "project": project.name, "subject": stage, "status": "Open"}
-		).insert(ignore_permissions=True)
+	create_project_tasks(doc, project.name)
 
 	frappe.db.set_value("Sales Order", doc.name, "project", project.name)
 

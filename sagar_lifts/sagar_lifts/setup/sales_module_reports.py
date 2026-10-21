@@ -17,7 +17,7 @@ REPORTS = [
 	{
 		"report_name": "SL All Active Leads by Caller",
 		"ref_doctype": "Lead",
-		"roles": ["SL Admin"],
+		"roles": ["SL Admin", "SL Sales Admin", "SL Sales Supervisor"],
 		"query": """
 			select name, lead_name, company_name, assigned_caller, site_city,
 				lead_quality, status, next_follow_up_date
@@ -29,7 +29,7 @@ REPORTS = [
 	{
 		"report_name": "SL Leads with No Activity 7+ Days",
 		"ref_doctype": "Lead",
-		"roles": ["SL Admin"],
+		"roles": ["SL Admin", "SL Sales Admin", "SL Sales Supervisor"],
 		"query": """
 			select name, lead_name, assigned_caller, last_follow_up_date,
 				datediff(curdate(), last_follow_up_date) as days_since_activity
@@ -43,7 +43,7 @@ REPORTS = [
 	{
 		"report_name": "SL Quotations Expiring This Week",
 		"ref_doctype": "Quotation",
-		"roles": ["SL Admin", "SL Sales"],
+		"roles": ["SL Admin", "SL Sales", "SL Sales Admin", "SL Caller"],
 		"query": """
 			select name, party_name, valid_till, status, grand_total
 			from `tabQuotation`
@@ -55,7 +55,7 @@ REPORTS = [
 	{
 		"report_name": "SL Opportunity Conversion Rate",
 		"ref_doctype": "Opportunity",
-		"roles": ["SL Admin", "SL Management"],
+		"roles": ["SL Admin", "SL Management", "SL Sales Admin"],
 		"query": """
 			select
 				count(*) as total_opportunities,
@@ -68,7 +68,7 @@ REPORTS = [
 	{
 		"report_name": "SL Scouter Performance - Leads Generated",
 		"ref_doctype": "SL Scout Report",
-		"roles": ["SL Admin", "SL Management"],
+		"roles": ["SL Admin", "SL Management", "SL Sales Admin"],
 		"query": """
 			select scouter_name,
 				count(*) as reports_submitted,
@@ -81,7 +81,7 @@ REPORTS = [
 	{
 		"report_name": "SL Caller Performance - Conversions",
 		"ref_doctype": "Lead",
-		"roles": ["SL Admin"],
+		"roles": ["SL Admin", "SL Sales Admin", "SL Sales Supervisor"],
 		"query": """
 			select assigned_caller,
 				count(*) as total_leads,
@@ -95,7 +95,7 @@ REPORTS = [
 	{
 		"report_name": "SL Monthly Incentives Paid",
 		"ref_doctype": "SL Incentive Record",
-		"roles": ["SL Admin", "SL Management"],
+		"roles": ["SL Admin", "SL Management", "SL Sales Admin"],
 		"query": """
 			select date_format(payment_date, '%Y-%m') as payment_month,
 				count(*) as incentives_paid,
@@ -109,7 +109,7 @@ REPORTS = [
 	{
 		"report_name": "SL Pipeline Value - Open Opportunities",
 		"ref_doctype": "Opportunity",
-		"roles": ["SL Admin", "SL Management"],
+		"roles": ["SL Admin", "SL Management", "SL Sales Admin"],
 		"query": """
 			select count(*) as open_opportunities,
 				sum(estimated_contract_value) as total_pipeline_value
