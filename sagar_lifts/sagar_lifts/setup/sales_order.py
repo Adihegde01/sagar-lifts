@@ -56,6 +56,8 @@ CUSTOM_FIELDS = {
 			"options": "Item",
 			"reqd": 1,
 			"description": "Lift-model items only",
+			# setup/lift_models.py
+			"link_filters": '[["Item","item_group","descendants of (inclusive)","Lift Models"]]',
 			"insert_after": "lift_type",
 		},
 		{

@@ -350,7 +350,7 @@ def sales_invoice_set_naming_series(doc, method=None):
 	# Invoice Type decides the series — a PI can never pick up an SL number.
 	if doc.is_return:
 		return
-	doc.naming_series = "SL/.####./.SL_FY." if doc.pi_type == "Tax Invoice" else "PI/.####./.SL_FY."
+	doc.naming_series = "SL/.###./.SL_FY." if doc.pi_type == "Tax Invoice" else "PI/.###./.SL_FY."
 
 
 def sales_invoice_set_collection_defaults(doc, method=None):
@@ -455,3 +455,17 @@ def purchase_invoice_set_manufacturing_approval(doc, method=None):
 	if is_contractor_bill and doc.approved_by_manufacturing and not doc.manufacturing_approval_by:
 		doc.manufacturing_approval_by = frappe.session.user
 		doc.manufacturing_approval_date = today()
+
+
+def quotation_mark_request_generated(doc, method=None):
+	# Sales guide 7.3 last step: SL Quotation Request -> Quotation Generated = Yes, Quotation Number.
+	if not doc.get("quotation_request"):
+		return
+	frappe.db.set_value("SL Quotation Request", doc.quotation_request, {
+		"quotation_generated": 1,
+		"quotation_reference": doc.name,
+		"quotation_date": doc.transaction_date,
+		"quotation_valid_till": doc.valid_till,
+	})
+	if doc.quotation_to == "Lead" and doc.party_name:
+		frappe.db.set_value("Lead", doc.party_name, "quotation_number", doc.name)

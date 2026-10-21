@@ -44,3 +44,17 @@ sagar_lifts.patches.v1_0.notification_specification #2026-10-08 collection notif
 sagar_lifts.patches.v1_0.backfill_challan_date
 sagar_lifts.patches.v1_0.client_scripts #2026-10-08 log collection update button
 sagar_lifts.patches.v1_0.maintenance_visit_pm_fields #2026-10-15 default service person
+sagar_lifts.patches.v1_0.sales_module_crm_fields
+sagar_lifts.patches.v1_0.lead_sources
+sagar_lifts.patches.v1_0.sales_module_notifications
+sagar_lifts.patches.v1_0.sales_module_reports
+sagar_lifts.patches.v1_0.role_permissions #2026-10-18 sales module lead/opportunity/quotation
+sagar_lifts.patches.v1_0.dashboards #2026-10-18 sales pipeline
+sagar_lifts.patches.v1_0.naming_series #2026-10-18g challan series, PO SL/YY-YY/NNN, TI SL/NNN/YY-YY, PI PI/NNN/YY-YY
+sagar_lifts.patches.v1_0.print_formats #2026-10-18l prints match paper
+sagar_lifts.patches.v1_0.lift_models
+sagar_lifts.patches.v1_0.sales_order_lift_fields #2026-10-18 lift model filter
+sagar_lifts.patches.v1_0.sales_module_crm_fields #2026-10-19 quotation request link
+sagar_lifts.patches.v1_0.create_sl_roles #2026-10-21 five sales roles
+sagar_lifts.patches.v1_0.role_permissions #2026-10-21b five sales roles, print/email/report
+sagar_lifts.patches.v1_0.sales_module_notifications #2026-10-21 recipients by sales team

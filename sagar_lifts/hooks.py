@@ -77,6 +77,7 @@ app_license = "mit"
 # ----------
 
 # add methods and filters to jinja environment
+jinja = {"methods": ["sagar_lifts.sagar_lifts.invoice_print.milestone_bill"]}
 # jinja = {
 # 	"methods": "sagar_lifts.utils.jinja_methods",
 # 	"filters": "sagar_lifts.utils.jinja_filters"
@@ -88,6 +89,7 @@ app_license = "mit"
 # before_install = "sagar_lifts.install.before_install"
 after_install = [
 	"sagar_lifts.sagar_lifts.setup.roles.after_install",
+	"sagar_lifts.sagar_lifts.setup.lift_models.setup_lift_models",
 	"sagar_lifts.sagar_lifts.setup.sales_order.setup_sales_order_customization",
 	"sagar_lifts.sagar_lifts.setup.job_id.setup_job_id_links",
 	"sagar_lifts.sagar_lifts.setup.delivery_note.setup_delivery_note_customization",
@@ -103,6 +105,7 @@ after_install = [
 	"sagar_lifts.sagar_lifts.setup.po_approval_workflow.setup_po_approval_workflow",
 	"sagar_lifts.sagar_lifts.setup.role_permissions.setup_role_permissions",
 	"sagar_lifts.sagar_lifts.setup.naming_series.setup_naming_series",
+	"sagar_lifts.sagar_lifts.setup.print_formats.setup_print_formats",
 	"sagar_lifts.sagar_lifts.setup.warehouses.setup_warehouses",
 	"sagar_lifts.sagar_lifts.setup.customer.setup_customer_customization",
 	"sagar_lifts.sagar_lifts.setup.dashboards.setup_dashboards",
@@ -155,6 +158,17 @@ after_install = [
 # -----------
 # Permissions evaluated in scripted ways
 
+# Sales guide Section 9: Scouters, Callers and Seniors see only their own records
+permission_query_conditions = {
+	"Lead": "sagar_lifts.sagar_lifts.sales_permissions.lead_query",
+	"SL Scout Report": "sagar_lifts.sagar_lifts.sales_permissions.scout_report_query",
+	"SL Quotation Request": "sagar_lifts.sagar_lifts.sales_permissions.quotation_request_query",
+	"SL Incentive Record": "sagar_lifts.sagar_lifts.sales_permissions.incentive_record_query",
+}
+has_permission = {
+	dt: "sagar_lifts.sagar_lifts.sales_permissions.has_own_record_permission"
+	for dt in ("Lead", "SL Scout Report", "SL Quotation Request", "SL Incentive Record")
+}
 # permission_query_conditions = {
 # 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
 # }
@@ -176,6 +190,9 @@ after_install = [
 # }
 
 doc_events = {
+	"Quotation": {
+		"on_submit": "sagar_lifts.sagar_lifts.doc_events.quotation_mark_request_generated",
+	},
 	"Sales Order": {
 		"validate": [
 			"sagar_lifts.sagar_lifts.doc_events.sales_order_set_job_number",
@@ -208,7 +225,9 @@ doc_events = {
 		"on_submit": [
 			"sagar_lifts.sagar_lifts.doc_events.sales_order_create_project",
 			"sagar_lifts.sagar_lifts.doc_events.sales_order_create_bom_skeleton",
+			"sagar_lifts.sagar_lifts.sales_handoff.sales_order_confirm_opportunity",
 		],
+		"on_cancel": "sagar_lifts.sagar_lifts.sales_handoff.sales_order_unconfirm_opportunity",
 	},
 	"Sales Invoice": {
 		"before_insert": "sagar_lifts.sagar_lifts.doc_events.sales_invoice_set_naming_series",
@@ -306,6 +325,10 @@ scheduler_events = {
 # Overriding Methods
 # ------------------------------
 #
+override_whitelisted_methods = {
+	# Quotation -> Sales Order pre-fills the job from the CRM Lead/Opportunity
+	"erpnext.selling.doctype.quotation.quotation.make_sales_order": "sagar_lifts.sagar_lifts.sales_handoff.make_sales_order",
+}
 # override_whitelisted_methods = {
 # 	"frappe.desk.doctype.event.event.get_events": "sagar_lifts.event.get_events"
 # }

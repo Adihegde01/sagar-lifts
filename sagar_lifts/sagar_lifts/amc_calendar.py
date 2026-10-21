@@ -71,8 +71,9 @@ def get_fy_suffix(date):
 
 
 def naming_fy(doc, part):
-	"""naming_series_variables hook for .SL_FY. — FY of the document's posting date."""
-	return get_fy_suffix((doc and doc.get("posting_date")) or getdate())
+	"""naming_series_variables hook for .SL_FY. — FY of the document's posting
+	date (invoices) or transaction date (orders)."""
+	return get_fy_suffix((doc and (doc.get("posting_date") or doc.get("transaction_date"))) or getdate())
 
 
 def get_last_completed_quarter(today):

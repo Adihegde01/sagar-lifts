@@ -4,6 +4,13 @@ SL_ROLES = [
 	"SL Admin",
 	"SL Management",
 	"SL Sales",
+	# Sales Module guide Section 2.1 — the five sales teams. SL Sales stays for
+	# existing users until they're moved onto these.
+	"SL Scouter",
+	"SL Caller",
+	"SL Sales Supervisor",
+	"SL Sales Senior",
+	"SL Sales Admin",
 	"SL Collection Lead",
 	# One dedicated accounts-team caller chasing new/overdue bills (not a CL).
 	"SL Accounts Caller",

@@ -14,12 +14,12 @@ MONDAY_REMINDERS = [
 	(
 		"Weekly Scout Report Submission Due",
 		"Please submit this week's SL Scout Report(s) before end of day.",
-		"SL Sales",
+		"SL Scouter",
 	),
 	(
 		"Weekly Caller Log Review Due",
 		"Please review this week's Lead follow-up logs and caller remarks.",
-		"SL Admin",
+		"SL Sales Supervisor",
 	),
 ]
 
@@ -27,7 +27,7 @@ FRIDAY_REMINDERS = [
 	(
 		"Weekly Sales Review Due",
 		"Please review this week's sales activity — caller logs, meetings held, and pipeline status.",
-		"SL Admin",
+		"SL Sales Admin",
 	),
 ]
 

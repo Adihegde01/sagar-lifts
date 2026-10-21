@@ -57,7 +57,7 @@ NOTIFICATIONS = [
 		"document_type": "SL Scout Report",
 		"event": "Submit",
 		"subject": "New Scout Report Submitted — {{ doc.name }}",
-		"recipients": [_role("SL Admin")],
+		"recipients": [_role("SL Sales Admin"), _role("SL Admin")],
 	},
 	{
 		# Covers guide #2 and #4 — see module docstring.
@@ -78,7 +78,7 @@ NOTIFICATIONS = [
 		"date_changed": "visit_date",
 		"days_in_advance": 7,
 		"subject": "Weekly Scout Review Due — {{ doc.name }}",
-		"recipients": [_role("SL Admin")],
+		"recipients": [_role("SL Sales Supervisor")],
 	},
 	# --- 6.2 Lead and Calling -------------------------------------------------
 	{
@@ -89,7 +89,7 @@ NOTIFICATIONS = [
 		"date_changed": "next_follow_up_date",
 		"days_in_advance": 0,
 		"subject": "Follow Up Due Today — {{ doc.lead_name or doc.name }}",
-		"recipients": [_field("assigned_caller"), _role("SL Admin")],
+		"recipients": [_field("assigned_caller"), _role("SL Sales Supervisor")],
 	},
 	{
 		**BASE,
@@ -99,7 +99,7 @@ NOTIFICATIONS = [
 		"date_changed": "next_follow_up_date",
 		"days_in_advance": 2,
 		"subject": "Follow Up OVERDUE — {{ doc.lead_name or doc.name }}",
-		"recipients": [_field("assigned_caller"), _role("SL Admin")],
+		"recipients": [_field("assigned_caller"), _role("SL Sales Supervisor")],
 	},
 	{
 		**BASE,
@@ -109,7 +109,7 @@ NOTIFICATIONS = [
 		"date_changed": "last_follow_up_date",
 		"days_in_advance": 7,
 		"subject": "Lead Going Cold — No Activity in 7 Days — {{ doc.lead_name or doc.name }}",
-		"recipients": [_role("SL Admin")],
+		"recipients": [_role("SL Sales Supervisor"), _role("SL Sales Admin"), _role("SL Admin")],
 	},
 	{
 		**BASE,
@@ -119,7 +119,7 @@ NOTIFICATIONS = [
 		"date_changed": "last_follow_up_date",
 		"days_in_advance": 14,
 		"subject": "ESCALATION — Lead Cold 14 Days, May Be Lost — {{ doc.lead_name or doc.name }}",
-		"recipients": [_role("SL Admin")],
+		"recipients": [_role("SL Sales Admin"), _role("SL Admin")],
 	},
 	# --- 6.3 Quotation ---------------------------------------------------------
 	{
@@ -128,7 +128,7 @@ NOTIFICATIONS = [
 		"document_type": "SL Quotation Request",
 		"event": "Submit",
 		"subject": "Quotation Request Submitted — Generate Quotation Now — {{ doc.name }}",
-		"recipients": [_role("SL Admin")],
+		"recipients": [_role("SL Sales Admin"), _role("SL Admin")],
 	},
 	{
 		**BASE,
@@ -136,7 +136,7 @@ NOTIFICATIONS = [
 		"document_type": "Quotation",
 		"event": "Submit",
 		"subject": "Quotation Ready — Share With Developer — {{ doc.name }}",
-		"recipients": [_role("SL Sales"), _role("SL Admin")],
+		"recipients": [_role("SL Caller"), _role("SL Sales Admin"), _role("SL Admin")],
 	},
 	{
 		**BASE,
@@ -146,7 +146,7 @@ NOTIFICATIONS = [
 		"date_changed": "valid_till",
 		"days_in_advance": 3,
 		"subject": "Quotation Expiring in 3 Days — Follow Up Urgently — {{ doc.name }}",
-		"recipients": [_role("SL Sales"), _role("SL Admin")],
+		"recipients": [_role("SL Caller"), _role("SL Sales Admin"), _role("SL Admin")],
 	},
 	{
 		**BASE,
@@ -157,7 +157,7 @@ NOTIFICATIONS = [
 		"days_in_advance": 1,
 		"condition": "doc.status not in ('Ordered', 'Partially Ordered')",
 		"subject": "Quotation Expired Without Order — Review — {{ doc.name }}",
-		"recipients": [_role("SL Admin")],
+		"recipients": [_role("SL Sales Admin"), _role("SL Admin"), _role("SL Sales Supervisor")],
 	},
 	# --- 6.4 Meeting (Lead fields — see module docstring) ----------------------
 	{
@@ -168,7 +168,7 @@ NOTIFICATIONS = [
 		"value_changed": "meeting_scheduled",
 		"condition": "doc.meeting_scheduled",
 		"subject": "Meeting Scheduled — Prepare — {{ doc.lead_name or doc.name }}",
-		"recipients": [_field("assigned_senior"), _role("SL Admin")],
+		"recipients": [_field("assigned_senior"), _role("SL Sales Admin"), _role("SL Admin")],
 	},
 	{
 		**BASE,
@@ -199,7 +199,7 @@ NOTIFICATIONS = [
 		"value_changed": "admin_to_attend_closure",
 		"condition": "doc.admin_to_attend_closure",
 		"subject": "Admin Needed for Closure Meeting — {{ doc.lead_name or doc.name }}",
-		"recipients": [_role("SL Admin"), _role("SL Management")],
+		"recipients": [_role("SL Sales Admin"), _role("SL Admin"), _role("SL Management")],
 	},
 	{
 		**BASE,
@@ -209,7 +209,7 @@ NOTIFICATIONS = [
 		"value_changed": "second_meeting_required",
 		"condition": "doc.second_meeting_required",
 		"subject": "Second Meeting Required — Schedule It — {{ doc.lead_name or doc.name }}",
-		"recipients": [_field("assigned_senior"), _role("SL Admin")],
+		"recipients": [_field("assigned_senior"), _role("SL Sales Supervisor")],
 	},
 	# --- 6.5 Order and Incentive -------------------------------------------
 	{
@@ -218,7 +218,7 @@ NOTIFICATIONS = [
 		"document_type": "Sales Order",
 		"event": "Submit",
 		"subject": "Order Confirmed — Create Incentive Record — {{ doc.name }}",
-		"recipients": [_role("SL Admin")],
+		"recipients": [_role("SL Sales Admin"), _role("SL Admin")],
 	},
 	{
 		**BASE,
@@ -274,7 +274,7 @@ NOTIFICATIONS = [
 		"days_in_advance": 30,
 		"condition": "doc.status == 'Open'",
 		"subject": "Opportunity Open 30 Days — Review Status — {{ doc.name }}",
-		"recipients": [_role("SL Admin")],
+		"recipients": [_role("SL Sales Admin"), _role("SL Admin"), _role("SL Sales Supervisor")],
 	},
 	{
 		**BASE,
@@ -285,7 +285,7 @@ NOTIFICATIONS = [
 		"days_in_advance": 60,
 		"condition": "doc.status == 'Open'",
 		"subject": "Opportunity Open 60 Days — Escalation Review — {{ doc.name }}",
-		"recipients": [_role("SL Admin"), _role("SL Management")],
+		"recipients": [_role("SL Sales Admin"), _role("SL Admin"), _role("SL Management")],
 	},
 ]
 

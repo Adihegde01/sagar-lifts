@@ -58,7 +58,8 @@
   "payment_reference",
   "paid_by",
   "individual_payment_confirmations",
-  "notes"
+  "notes",
+  "amended_from"
  ],
  "fields": [
   {
@@ -334,6 +335,16 @@
    "fieldname": "notes",
    "label": "Notes",
    "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "SL Incentive Record",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,

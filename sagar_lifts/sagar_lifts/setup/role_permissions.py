@@ -28,8 +28,16 @@ CORE_DOCTYPE_GRID = {
 	# Admin roles this build uses. Without these, SL Sales/SL Admin had zero
 	# Custom DocPerm on these three ERPNext-native doctypes and couldn't
 	# open the Lead list at all.
+	# Sales Module guide Sections 9 and 11, five sales roles. Scouter, Caller
+	# and Senior rows are narrowed to their own records by sales_permissions.py.
 	"Lead": {
 		"SL Admin": dict(read=1, write=1, create=1, delete=1),
+		"SL Sales Admin": dict(read=1, write=1, create=1, delete=1),
+		# "They cannot create or delete leads — only review and add notes"
+		"SL Sales Supervisor": dict(read=1, write=1),
+		"SL Caller": dict(read=1, write=1),
+		"SL Sales Senior": dict(read=1, write=1),
+		"SL Scouter": dict(read=1),
 		# Leads can originate from any source (scouting, referral, walk-in,
 		# online) — SL Sales creates/updates them directly, same as the
 		# guide's Caller/Scouter tiers.
@@ -37,6 +45,10 @@ CORE_DOCTYPE_GRID = {
 	},
 	"Opportunity": {
 		"SL Admin": dict(read=1, write=1, create=1, delete=1),
+		"SL Sales Admin": dict(read=1, write=1, create=1, delete=1),
+		# STEP 9: Senior reads all, writes meeting notes, can't create
+		"SL Sales Senior": dict(read=1, write=1),
+		"SL Sales Supervisor": dict(read=1),
 		# Guide, Section 9 STEP 9: "They cannot create new Opportunities —
 		# Admin does that from Leads." SL Sales gets write (to log meeting
 		# notes/outcomes) but not create.
@@ -44,9 +56,40 @@ CORE_DOCTYPE_GRID = {
 	},
 	"Quotation": {
 		"SL Admin": dict(read=1, write=1, create=1, delete=1, submit=1, cancel=1),
+		# 2.2 MUST: only Sales Admin generates a Quotation
+		"SL Sales Admin": dict(read=1, write=1, create=1, delete=1, submit=1, cancel=1),
+		"SL Sales Senior": dict(read=1),
+		# notified "Quotation ready — share with developer"
+		"SL Caller": dict(read=1),
 		# Guide, Section 2.2 MUST / Section 9 NEVER: "Sales Admin must be the
 		# only person who can generate a Quotation." SL Sales gets read-only.
 		"SL Sales": dict(read=1),
+	},
+	"SL Scout Report": {
+		"SL Admin": dict(read=1, write=1, create=1, delete=1, submit=1, cancel=1),
+		"SL Sales Admin": dict(read=1, write=1, create=1, delete=1, submit=1, cancel=1),
+		"SL Sales": dict(read=1, write=1, create=1, submit=1),
+		"SL Sales Supervisor": dict(read=1),
+		"SL Scouter": dict(read=1, write=1, create=1, submit=1),
+	},
+	"SL Quotation Request": {
+		"SL Admin": dict(read=1, write=1, create=1, delete=1, submit=1, cancel=1),
+		"SL Sales Admin": dict(read=1, write=1, create=1, delete=1, submit=1, cancel=1),
+		"SL Sales": dict(read=1, write=1, create=1, submit=1),
+		"SL Sales Supervisor": dict(read=1),
+		"SL Sales Senior": dict(read=1),
+		"SL Caller": dict(read=1, write=1, create=1, submit=1),
+		"SL Scouter": dict(read=1, write=1, create=1, submit=1),
+	},
+	"SL Incentive Record": {
+		"SL Admin": dict(read=1, write=1, create=1, delete=1, submit=1, cancel=1),
+		"SL Sales Admin": dict(read=1, write=1, create=1, delete=1, submit=1, cancel=1),
+		"SL Management": dict(read=1),
+		"SL Sales": dict(read=1),
+		# each sees only the records naming them (notified of their share)
+		"SL Scouter": dict(read=1),
+		"SL Caller": dict(read=1),
+		"SL Sales Senior": dict(read=1),
 	},
 	# Not one of the guide's four core doctypes, but Purchase Order needs at
 	# least this to be usable at all — Section 8.2: Stores raises the PO,
@@ -64,6 +107,8 @@ CORE_DOCTYPE_GRID = {
 		# Same grant as SL Billing — SL Sales isn't in the guide at all; this
 		# is Sagar Lifts' own call (confirmed 2026-09), not a guide transcription.
 		"SL Sales": dict(read=1, write=1, create=1, submit=1),
+		# Step 9: Sales Admin confirms the order
+		"SL Sales Admin": dict(read=1, write=1, create=1, submit=1),
 		"SL Manufacturing": dict(read=1, write=1, create=1, submit=1),
 		"SL Stores": dict(read=1),
 		# write=1 and submit=1 are required here even though the guide's own
@@ -125,6 +170,11 @@ ALL_SL_ROLES = [
 	"SL Accounts Caller",
 	"SL Billing",
 	"SL Sales",
+	"SL Scouter",
+	"SL Caller",
+	"SL Sales Supervisor",
+	"SL Sales Senior",
+	"SL Sales Admin",
 	"SL Manufacturing",
 	"SL Stores",
 	"SL Dispatch",
@@ -144,7 +194,11 @@ ALL_SL_ROLES = [
 # separate per-user User Permission on Customer (Phase 1) — that restricts
 # rows, it doesn't need write here at all.
 BASELINE_MASTER_GRID = {
-	"Customer": {role: dict(read=1) for role in ALL_SL_ROLES},
+	# Sales Admin turns the Lead into a Customer when making the Sales Order
+	"Customer": {role: dict(read=1) for role in ALL_SL_ROLES} | {"SL Sales Admin": dict(read=1, write=1, create=1)},
+	# ...and ERPNext writes the Lead's contact and address onto that Customer
+	"Contact": {"SL Sales Admin": dict(read=1, write=1, create=1)},
+	"Address": {"SL Sales Admin": dict(read=1, write=1, create=1)},
 	"Item": {role: dict(read=1) for role in ALL_SL_ROLES},
 	# Also needed to create/save any selling document at all — ERPNext
 	# resolves the customer's receivable account (party_account_currency)
@@ -156,6 +210,9 @@ BASELINE_MASTER_GRID = {
 }
 
 _PERM_FIELDS = ("read", "write", "create", "delete", "submit", "cancel", "if_owner")
+# Anyone who can read a document can print, email and report on it; anyone who
+# can cancel can amend.
+_FOLLOWS = {"print": "read", "email": "read", "report": "read", "amend": "cancel"}
 
 
 def _upsert(doctype, role, permlevel, values):
@@ -171,6 +228,8 @@ def _upsert(doctype, role, permlevel, values):
 	doc.permlevel = permlevel
 	for field in _PERM_FIELDS:
 		doc.set(field, values.get(field, 0))
+	for field, source in _FOLLOWS.items():
+		doc.set(field, values.get(field, values.get(source, 0)))
 	doc.save(ignore_permissions=True)
 
 

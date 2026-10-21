@@ -444,6 +444,17 @@ CUSTOM_FIELDS = {
 			"insert_after": "lost_reason",
 		},
 	],
+	# Sales guide 7.3: the Quotation links back to the request it answers;
+	# submitting it marks the request Quotation Generated (doc_events).
+	"Quotation": [
+		{
+			"fieldname": "quotation_request",
+			"label": "Quotation Request",
+			"fieldtype": "Link",
+			"options": "SL Quotation Request",
+			"insert_after": "party_name",
+		},
+	],
 }
 
 
@@ -453,3 +464,4 @@ def setup_sales_module_crm_fields():
 	create_custom_fields(CUSTOM_FIELDS, ignore_validate=True)
 	frappe.clear_cache(doctype="Lead")
 	frappe.clear_cache(doctype="Opportunity")
+	frappe.clear_cache(doctype="Quotation")

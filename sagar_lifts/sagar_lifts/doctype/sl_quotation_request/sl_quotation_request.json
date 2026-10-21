@@ -71,7 +71,8 @@
   "cb_admin_processing",
   "quotation_sent_to",
   "quotation_valid_till",
-  "admin_notes"
+  "admin_notes",
+  "amended_from"
  ],
  "fields": [
   {
@@ -418,6 +419,16 @@
    "fieldname": "admin_notes",
    "label": "Admin Notes",
    "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "SL Quotation Request",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
