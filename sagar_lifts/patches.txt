@@ -51,7 +51,7 @@ sagar_lifts.patches.v1_0.sales_module_reports
 sagar_lifts.patches.v1_0.role_permissions #2026-10-18 sales module lead/opportunity/quotation
 sagar_lifts.patches.v1_0.dashboards #2026-10-18 sales pipeline
 sagar_lifts.patches.v1_0.naming_series #2026-10-18g challan series, PO SL/YY-YY/NNN, TI SL/NNN/YY-YY, PI PI/NNN/YY-YY
-sagar_lifts.patches.v1_0.print_formats #2026-10-18l prints match paper
+sagar_lifts.patches.v1_0.print_formats #2026-10-24 structured challan
 sagar_lifts.patches.v1_0.lift_models
 sagar_lifts.patches.v1_0.sales_order_lift_fields #2026-10-18 lift model filter
 sagar_lifts.patches.v1_0.sales_module_crm_fields #2026-10-19 quotation request link

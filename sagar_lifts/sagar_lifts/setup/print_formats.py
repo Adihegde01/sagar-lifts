@@ -8,56 +8,75 @@ import frappe
 
 CHALLAN_HTML = """
 <style>
-	.slc th, .slc td { color: #000 !important; background: none !important; }
-	.slc th { font-weight: bold; text-align: center; }
-	.slc { font-family: Arial, sans-serif; font-size: 12px; color: #222; }
-	.slc .c { text-align: center; }
-	.slc h4 { margin: 0; letter-spacing: 1px; }
-	.slc h2 { margin: 2px 0; font-size: 26px; }
-	.slc .line { border-bottom: 1px solid #555; padding: 4px 0; }
-	.slc table.items { width: 100%; border-collapse: collapse; margin-top: 8px; }
-	.slc table.items th, .slc table.items td { border: 1px solid #555; padding: 4px 6px; }
-	.slc table.items td.r { text-align: right; }
-	.slc .meta td { padding: 3px 8px 3px 0; }
-	.slc .foot { margin-top: 40px; width: 100%; }
+	.slc { font-family: Arial, Helvetica, sans-serif; font-size: 12.5px; color: #000; }
+	.slc table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+	.slc th, .slc td { color: #000 !important; background: none !important; padding: 4px 8px !important;
+		vertical-align: middle !important; line-height: 1.35; }
+	.slc .box { border: 1.5px solid #000; }
+	.slc .grid td, .slc .grid th { border: 1px solid #000; }
+	.slc .grid th { font-weight: bold; text-align: center; font-size: 12px; letter-spacing: .3px; }
+	.slc .c { text-align: center; } .slc .r { text-align: right; } .slc .nw { white-space: nowrap; }
+	.slc .lbl { color: #444 !important; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; }
+	.slc .val { font-weight: bold; font-size: 13px; }
+	.slc .items td { height: 26px; }
+	.slc .sig td { height: 70px; vertical-align: bottom !important; }
 </style>
 {% set so = frappe.db.get_value("Sales Order", doc.job_id, ["job_number", "transaction_date"], as_dict=1) if doc.job_id else None %}
 {% set has_rates = doc.items | selectattr("rate") | list | length %}
+{% set gstin = frappe.db.get_value("Company", doc.company, "tax_id") or "27AERFS4394C1ZK" %}
 <div class="slc">
-	<div class="c">
-		<h4>DELIVERY CHALLAN</h4>
-		<h2>Sagar Lifts</h2>
-		<div>111, Veena Industrial Estate, Near to Monginis Factory, Off Link Road, Andheri (W), Mumbai - 400 053.</div>
-		<div><b>Mobile : 9223515783 / 9223501198</b></div>
-	</div>
-	<div class="line" style="margin-top:10px">Messrs <b>{{ doc.customer_name }}</b>
-		{% if doc.site_name %} &mdash; {{ doc.site_name }}{% endif %}</div>
-	<table class="meta" style="margin-top:6px"><tr>
-		<td>Challan No. <b>{{ doc.name }}</b></td>
-		<td>Date <b>{{ frappe.utils.formatdate(doc.challan_date or doc.posting_date, "dd/MM/yy") }}</b></td>
-		<td>Order No. <b>{{ (so and so.job_number) or doc.job_id or "" }}</b></td>
-		<td>Date <b>{{ frappe.utils.formatdate(so.transaction_date, "dd/MM/yy") if so else "" }}</b></td>
-	</tr></table>
-	<table class="items">
-		<tr><th style="width:8%">Sr. No.</th><th>DESCRIPTION</th><th style="width:16%">Quantity</th>
-			<th style="width:12%">Rate</th><th style="width:14%">Amount Rs.</th></tr>
+	<table class="box">
+		<tr><td class="c" style="padding:10px 8px 8px !important">
+			<div style="font-size:13px; font-weight:bold; letter-spacing:2px">DELIVERY CHALLAN</div>
+			<div style="font-size:28px; font-weight:bold; margin:2px 0">Sagar Lifts</div>
+			<div>111, Veena Industrial Estate, Near to Monginis Factory, Off Link Road, Andheri (W), Mumbai - 400 053.</div>
+			<div><b>Mobile : 9223515783 / 9223501198</b></div>
+		</td></tr>
+	</table>
+
+	<table class="grid" style="margin-top:-1.5px">
+		<tr>
+			<td style="width:62%" rowspan="2">
+				<div class="lbl">Messrs</div>
+				<div class="val">{{ doc.customer_name }}</div>
+				<div>{{ [doc.site_name, doc.get("site_city")] | select | join(", ") }}</div>
+			</td>
+			<td style="width:19%"><div class="lbl">Challan No.</div><div class="val">{{ doc.name }}</div></td>
+			<td style="width:19%"><div class="lbl">Date</div><div class="val">{{ frappe.utils.formatdate(doc.challan_date or doc.posting_date, "dd/MM/yy") }}</div></td>
+		</tr>
+		<tr>
+			<td><div class="lbl">Order No.</div><div class="val">{{ (so and so.job_number) or doc.job_id or "" }}</div></td>
+			<td><div class="lbl">Order Date</div><div class="val">{{ frappe.utils.formatdate(so.transaction_date, "dd/MM/yy") if so else "" }}</div></td>
+		</tr>
+	</table>
+
+	<table class="grid items" style="margin-top:-1px">
+		<tr><th style="width:8%">Sr. No.</th><th>DESCRIPTION</th><th style="width:14%">Quantity</th>
+			<th style="width:14%">Rate</th><th style="width:17%">Amount Rs.</th></tr>
 		{% for row in doc.items %}
 		<tr>
-			<td>{{ row.idx }}</td>
-			<td>{{ row.item_name }}{% if row.description and row.description != row.item_name %}<br><small>{{ row.description | striptags }}</small>{% endif %}</td>
-			<td>{{ row.get_formatted("qty") }} {{ row.uom }}</td>
-			<td class="r">{{ row.get_formatted("rate") if has_rates else "" }}</td>
-			<td class="r">{{ row.get_formatted("amount") if has_rates else "" }}</td>
+			<td class="c">{{ row.idx }}</td>
+			<td>{{ row.item_name }}{% if row.description and (row.description | striptags | trim) != row.item_name %}<br><span style="font-size:11px">{{ row.description | striptags }}</span>{% endif %}</td>
+			<td class="c nw">{{ "%g" | format(row.qty) }} {{ row.uom }}</td>
+			<td class="r nw">{{ frappe.utils.fmt_money(row.rate, 2) if has_rates else "" }}</td>
+			<td class="r nw">{{ frappe.utils.fmt_money(row.amount, 2) if has_rates else "" }}</td>
 		</tr>
 		{% endfor %}
-		<tr><td colspan="3"><b>GSTIN : {{ frappe.db.get_value("Company", doc.company, "tax_id") or "27AERFS4394C1ZK" }}</b></td>
+		{% for _ in range([10 - doc.items | length, 0] | max) %}<tr><td></td><td></td><td></td><td></td><td></td></tr>{% endfor %}
+		<tr>
+			<td colspan="3"><b>GSTIN : {{ gstin }}</b></td>
 			<td class="r"><b>TOTAL</b></td>
-			<td class="r"><b>{{ doc.get_formatted("total") if has_rates else "" }}</b></td></tr>
+			<td class="r nw"><b>{{ frappe.utils.fmt_money(doc.total, 2) if has_rates else "" }}</b></td>
+		</tr>
 	</table>
-	<table class="foot"><tr>
-		<td style="vertical-align:bottom">{% if doc.vehicle_number %}Vehicle No. <b>{{ doc.vehicle_number }}</b><br><br>{% endif %}Receiver's Signature</td>
-		<td style="text-align:right">For <b>Sagar Lifts</b><br><br><br><br>Authorised Signatory</td>
-	</tr></table>
+
+	<table class="grid sig" style="margin-top:-1px">
+		<tr>
+			<td style="width:34%">{% if doc.vehicle_number %}<div class="lbl">Vehicle No.</div><div class="val">{{ doc.vehicle_number }}</div>{% endif %}</td>
+			<td style="width:33%" class="c">Receiver's Signature</td>
+			<td style="width:33%" class="c"><div style="margin-bottom:34px">For <b>Sagar Lifts</b></div>Authorised Signatory</td>
+		</tr>
+	</table>
 </div>
 """
 
