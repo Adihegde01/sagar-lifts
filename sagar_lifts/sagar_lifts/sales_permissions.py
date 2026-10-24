@@ -87,3 +87,18 @@ def quotation_request_query(user=None, doctype=None):
 
 def incentive_record_query(user=None, doctype=None):
 	return own_records_condition("SL Incentive Record", user)
+
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def users_with_role(doctype, txt, searchfield, start, page_len, filters):
+	"""Link search for a User field limited to one role, e.g. Scouter Name ->
+	SL Scouter. filters = {"role": "..."}."""
+	return frappe.db.sql(
+		"""select distinct u.name, u.full_name from `tabUser` u
+		join `tabHas Role` r on r.parent = u.name and r.parenttype = 'User'
+		where r.role = %(role)s and u.enabled = 1
+			and (u.name like %(txt)s or u.full_name like %(txt)s)
+		order by u.full_name limit %(start)s, %(page_len)s""",
+		{"role": filters.get("role"), "txt": f"%{txt}%", "start": start, "page_len": page_len},
+	)

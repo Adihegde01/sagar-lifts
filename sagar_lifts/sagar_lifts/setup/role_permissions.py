@@ -161,6 +161,12 @@ PERMLEVEL_1_GRID = {
 		"SL Admin": dict(read=1, write=1),
 		"SL Management": dict(read=1, write=1),
 	},
+	# Admin Processing section (caller assignment, lead link, notes): Sales
+	# Admin only — scouters and other roles never see it.
+	"SL Scout Report": {
+		"SL Admin": dict(read=1, write=1),
+		"SL Sales Admin": dict(read=1, write=1),
+	},
 }
 
 ALL_SL_ROLES = [

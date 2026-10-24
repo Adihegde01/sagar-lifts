@@ -6,6 +6,14 @@ from frappe.model.document import Document
 
 
 class SLScoutReport(Document):
+	def validate(self):
+		# A scouter files reports as themselves only — the field is read-only for
+		# them in the form, this keeps API/import writes honest too.
+		if not frappe.utils.has_common(
+			frappe.get_roles(), ["SL Admin", "SL Sales Admin", "System Manager"]
+		):
+			self.scouter_name = frappe.session.user
+
 	def on_submit(self):
 		# Sales guide 1.2 step 2: every submitted scout report becomes a CRM Lead.
 		# An amended report takes over its cancelled original's Lead instead of
@@ -21,6 +29,23 @@ class SLScoutReport(Document):
 				frappe._("Lead {0} created").format(frappe.utils.get_link_to_form("Lead", lead)), alert=True
 			)
 		self.db_set({"lead_created": 1, "lead_reference": lead})
+
+	def before_update_after_submit(self):
+		if self.has_value_changed("assigned_to_caller") and self.assigned_to_caller and not self.assignment_date:
+			self.assignment_date = frappe.utils.today()
+
+	def on_update_after_submit(self):
+		# Sales Admin assigns the caller here after submit; the Lead is what the
+		# caller works from, so push it across (via save, so the "New Lead
+		# Assigned to Caller" notification fires).
+		if not (self.lead_reference and self.assigned_to_caller):
+			return
+		if not self.has_value_changed("assigned_to_caller"):
+			return
+		lead = frappe.get_doc("Lead", self.lead_reference)
+		if lead.assigned_caller != self.assigned_to_caller:
+			lead.assigned_caller = self.assigned_to_caller
+			lead.save(ignore_permissions=True)
 
 	def lead_values(self):
 		# "A — Hot Lead" -> "A Hot" (Lead's Lead Quality options)
