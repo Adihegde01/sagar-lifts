@@ -50,9 +50,17 @@ def make_milestone_invoice(sales_order: str, milestone: int):
 	inv.milestone_name = name
 	inv.milestone_percent = pct
 	inv.remarks = f"Milestone {milestone} — {name} ({pct:g}%) of {so.name}"
+	# ERPNext maps "qty still to bill" = ordered qty minus qty already billed.
+	# We bill by scaling the rate and keep the full qty, so once the first
+	# milestone is submitted that works out to 0 and the next milestone opened
+	# with no usable rows. Rebuild qty and rate from the order line itself.
+	order_rows = {row.name: row for row in so.items}
 	for item in inv.items:
-		rate = flt(item.rate * pct / 100, item.precision("rate"))
-		item.rate = item.price_list_rate = rate
+		row = order_rows.get(item.so_detail)
+		if not row:
+			continue
+		item.qty = row.qty
+		item.rate = item.price_list_rate = flt(row.rate * pct / 100, item.precision("rate"))
 		item.discount_percentage = item.discount_amount = 0
 	inv.run_method("calculate_taxes_and_totals")
 	return inv
