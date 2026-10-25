@@ -172,6 +172,21 @@ INVOICE_HTML = """
 	.slti .ind { padding-left: 42px; }
 	.slti .ms td { height: 40px; vertical-align: middle; }
 	.slti .tot td { padding: 1px 5px; }
+	/* Proforma Invoice only: softer, modern tables over the same layout. The
+	   Tax Invoice keeps the black-ruled paper look. */
+	.slti-pro { -webkit-print-color-adjust: exact; print-color-adjust: exact; color: #1b2230; }
+	.slti-pro .ptitle { border: 0 !important; border-radius: 8px; background: #1b2230; color: #fff !important; letter-spacing: .14em; text-transform: uppercase; font-style: normal !important; font-size: 12px; padding: 5px 0; margin-top: 4px; }
+	.slti-pro table.grid { border: 1px solid #d5dae2 !important; border-radius: 10px; border-collapse: separate; border-spacing: 0; overflow: hidden; }
+	.slti-pro .grid td, .slti-pro .grid th { border: 0; border-right: 1px solid #e6e9ef; border-bottom: 1px solid #e6e9ef; padding: 6px 9px !important; color: #1b2230 !important; font-variant-numeric: tabular-nums; }
+	.slti-pro .grid td:last-child, .slti-pro .grid th:last-child { border-right: 0; }
+	.slti-pro .grid tr:last-child td { border-bottom: 0; }
+	.slti.slti-pro .grid th { background: #1b2230 !important; color: #fff !important; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; padding: 8px 9px !important; border-right-color: #323b4d; border-bottom: 0; }
+	.slti-pro .ms td { height: 34px; }
+	.slti-pro .tot td { padding: 4px 9px !important; border-color: #eef0f4; }
+	.slti.slti-pro tr.cur td { background: #eef1f6 !important; font-weight: 700; }
+	.slti.slti-pro tr.grand td { background: #1b2230 !important; color: #fff !important; font-size: 13.5px; border-color: #1b2230; padding: 7px 9px !important; }
+	.slti.slti-pro tr.words td { background: #f6f7fa !important; }
+	.slti.slti-pro tr.fine td { color: #6b7280 !important; font-weight: 400; }
 </style>
 {% macro amt(v) %}{{ "%.0f" | format(v or 0) }}{% endmacro %}
 {% macro pct(v) %}{{ ("%.2f" | format(v or 0)).rstrip("0").rstrip(".") }}%{% endmacro %}
@@ -180,10 +195,10 @@ INVOICE_HTML = """
 {% set mb = milestone_bill(doc) if doc.billing_trigger_type == "Milestone" and doc.job_id and doc.milestone_number else None %}
 {% set words = (doc.in_words or "").replace("INR ", "").replace(",", "").replace(" And ", " ").rstrip(".") %}
 {% set words = words[:-4] ~ "Only" if words.lower().endswith("only") else words %}
-<div class="slti">
+<div class="slti{% if is_pi %} slti-pro{% endif %}">
 	<div class="c b" style="font-size:17px">SAGAR LIFTS</div>
 	<div class="c b">Opp.Options Showroom, 18/62, Silver Sand, Lokhandwala Nr.Adarsh Nagar,Nr Infinity Mall New Link Road,<br>Andheri West Mumbai - 400102</div>
-	<div class="c b" style="border:1px solid #000; font-style:italic">{{ "Proforma Invoice" if is_pi else "TAX INVOICE" }}</div>
+	<div class="c b ptitle" style="border:1px solid #000; font-style:italic">{{ "Proforma Invoice" if is_pi else "TAX INVOICE" }}</div>
 
 	<table style="margin-top:2px"><tr>
 		<td class="ind" style="width:57%; vertical-align:top">
@@ -238,7 +253,7 @@ INVOICE_HTML = """
 		{% set span = 6 %}
 		<tr class="tot"><td></td><td colspan="5"></td><td class="r">TOTAL = A</td><td class="r b">{{ amt(mb.a) }}</td></tr>
 		<tr class="tot"><td></td><td colspan="6" class="r">Less Previous bill amt = B</td><td class="r">{{ amt(mb.b) }}</td></tr>
-		<tr class="tot"><td></td><td colspan="6" class="r">Current bill amt = C = ( A - B )</td><td class="r b">{{ amt(mb.c) }}</td></tr>
+		<tr class="tot cur"><td></td><td colspan="6" class="r">Current bill amt = C = ( A - B )</td><td class="r b">{{ amt(mb.c) }}</td></tr>
 		{% else %}
 		<tr><th style="width:5%">Sr.No</th><th>Description</th><th style="width:9%">HSN/SAC<br>Code</th><th style="width:8%">Qty</th>
 			<th style="width:8%">Unit</th><th style="width:12%">Rate</th><th style="width:13%">Amt</th></tr>
@@ -248,15 +263,15 @@ INVOICE_HTML = """
 			<td class="r">{{ amt(row.rate) }}</td><td class="r">{{ amt(row.amount) }}</td></tr>
 		{% endfor %}
 		{% set span = 5 %}
-		<tr class="tot"><td></td><td colspan="5" class="r">Current bill amt = C</td><td class="r b">{{ amt(doc.net_total) }}</td></tr>
+		<tr class="tot cur"><td></td><td colspan="5" class="r">Current bill amt = C</td><td class="r b">{{ amt(doc.net_total) }}</td></tr>
 		{% endif %}
 		{% for t in doc.taxes | selectattr("tax_amount") | sort(attribute="description") %}
 		<tr class="tot"><td></td>
 			{% if is_pi and loop.last %}<td class="b">(S.T.Category - Works Contract)</td><td colspan="{{ span - 1 }}" class="r">
 			{% else %}<td colspan="{{ span }}" class="r">{% endif %}Add {{ t.description }} @{{ "%g" | format(t.rate) }} % on C</td><td class="r">{{ amt(t.tax_amount) }}</td></tr>
 		{% endfor %}
-		<tr class="tot"><td></td><td colspan="{{ span }}" class="r b">Total with Taxes</td><td class="r b">{{ amt(doc.rounded_total or doc.grand_total) }}</td></tr>
-		<tr><td colspan="{{ span + 2 }}" class="b" style="font-size:13.5px; border-left:0">Rupees : {{ words }}</td></tr>
+		<tr class="tot grand"><td></td><td colspan="{{ span }}" class="r b">Total with Taxes</td><td class="r b">{{ amt(doc.rounded_total or doc.grand_total) }}</td></tr>
+		<tr class="words"><td colspan="{{ span + 2 }}" class="b" style="font-size:13.5px; border-left:0">Rupees : {{ words }}</td></tr>
 		<tr>
 			<td colspan="{{ span - 2 }}" class="b" style="padding:10px 0 4px 42px !important; font-size:11.5px; line-height:1.55; vertical-align:top">
 				GSTIN - {{ gstin }}<br>PAN NO : {{ gstin[2:12] }}<br>MSME NO : UDYAM-MH-19-0127149<br>
@@ -266,8 +281,8 @@ INVOICE_HTML = """
 				<div style="height:92px"></div>
 				<div class="serif" style="font-size:15px">Authorised Signatory</div></td>
 		</tr>
-		<tr><td colspan="{{ span + 2 }}" class="b" style="font-size:11px">Goods are despatched at consignee's risk.Interest will be charged @15 p.a. on all overdue account.Payment requested by<br>cheque or draft payable at Mumbai.Subject to Mumbai Jurisdiction.</td></tr>
-		<tr><td colspan="{{ span + 2 }}" class="b" style="font-size:11px">Declaration : - We declare that this invoice shows the actual price of the goods &amp; service described and that<br>all particulars are true and goods &amp; service described and that all particulars are true and correct.</td></tr>
+		<tr class="fine"><td colspan="{{ span + 2 }}" class="b" style="font-size:11px">Goods are despatched at consignee's risk.Interest will be charged @15 p.a. on all overdue account.Payment requested by<br>cheque or draft payable at Mumbai.Subject to Mumbai Jurisdiction.</td></tr>
+		<tr class="fine"><td colspan="{{ span + 2 }}" class="b" style="font-size:11px">Declaration : - We declare that this invoice shows the actual price of the goods &amp; service described and that<br>all particulars are true and goods &amp; service described and that all particulars are true and correct.</td></tr>
 	</table>
 	{% if is_pi %}<div class="b" style="margin:4px 0 0 4px; font-size:13px">Note : - We will give you tax invoice After Received Payment</div>{% endif %}
 </div>

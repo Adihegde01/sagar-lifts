@@ -64,3 +64,4 @@ sagar_lifts.patches.v1_0.role_permissions #2026-10-24 scout report admin section
 sagar_lifts.patches.v1_0.workspaces #2026-10-24 sl admin sees only its own tile
 sagar_lifts.patches.v1_0.sales_order_draft_state #2026-10-25 Draft state + Confirm Order so a draft order can be submitted
 sagar_lifts.patches.v1_0.dashboards #2026-10-25 active orders count submitted only
+sagar_lifts.patches.v1_0.print_formats #2026-10-25 premium proforma invoice tables
