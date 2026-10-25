@@ -180,6 +180,7 @@ def task_assignees(order, role):
 
 def create_project_tasks(order, project):
 	from frappe.desk.form.assign_to import _add as assign
+	from frappe.share import add_docshare
 
 	for subject, role in PROJECT_TASKS:
 		task = frappe.get_doc(
@@ -187,6 +188,16 @@ def create_project_tasks(order, project):
 			 "description": f"{order.job_name or order.name}: {subject}"}
 		).insert(ignore_permissions=True)
 		users = task_assignees(order, role)
+		for user in users:
+			# Assigning shares the Task with anyone who can't already see it, and
+			# Frappe checks the *logged-in* user's share right for that — which
+			# Sales Admin/Billing/Manufacturing don't have on Task, so confirming
+			# an order failed for everyone but Administrator. Share it here with
+			# the share check skipped; write so the assignee can close the task.
+			if not frappe.has_permission("Task", doc=task, user=user):
+				add_docshare(
+					"Task", task.name, user=user, read=1, write=1, flags={"ignore_share_permission": True}
+				)
 		if users:
 			assign(
 				{"assign_to": users, "doctype": "Task", "name": task.name, "description": task.description},

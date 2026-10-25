@@ -65,6 +65,15 @@ CORE_DOCTYPE_GRID = {
 		# only person who can generate a Quotation." SL Sales gets read-only.
 		"SL Sales": dict(read=1),
 	},
+	# Billing records the money received against each PI (Advance, On Delivery,
+	# Handover, AMC) and raises the Tax Invoice after it. No SL role could
+	# create one before this.
+	"Payment Entry": {
+		"SL Admin": dict(read=1, write=1, create=1, delete=1, submit=1, cancel=1),
+		"SL Billing": dict(read=1, write=1, create=1, submit=1),
+		"SL Management": dict(read=1),
+		"SL Collection Lead": dict(read=1),
+	},
 	"SL Scout Report": {
 		"SL Admin": dict(read=1, write=1, create=1, delete=1, submit=1, cancel=1),
 		"SL Sales Admin": dict(read=1, write=1, create=1, delete=1, submit=1, cancel=1),
