@@ -1,5 +1,6 @@
 import frappe
 from frappe import _
+from frappe.model.mapper import map_child_doc
 from frappe.utils import flt
 
 from erpnext.selling.doctype.sales_order.sales_order import make_sales_invoice
@@ -50,15 +51,19 @@ def make_milestone_invoice(sales_order: str, milestone: int):
 	inv.milestone_name = name
 	inv.milestone_percent = pct
 	inv.remarks = f"Milestone {milestone} — {name} ({pct:g}%) of {so.name}"
-	# ERPNext maps "qty still to bill" = ordered qty minus qty already billed.
-	# We bill by scaling the rate and keep the full qty, so once the first
-	# milestone is submitted that works out to 0 and the next milestone opened
-	# with no usable rows. Rebuild qty and rate from the order line itself.
-	order_rows = {row.name: row for row in so.items}
-	for item in inv.items:
-		row = order_rows.get(item.so_detail)
-		if not row:
-			continue
+	# ERPNext's mapper only carries rows with "qty still to bill" (ordered qty
+	# minus qty already billed). We bill a milestone by scaling the rate and
+	# keeping the full qty, so after the first milestone is submitted that is 0
+	# and later milestones came back with no usable rows at all. Take the header
+	# from the mapper but rebuild every row from the Sales Order line itself.
+	inv.set("items", [])
+	for row in so.items:
+		item = map_child_doc(
+			row,
+			inv,
+			{"doctype": "Sales Invoice Item", "field_map": {"name": "so_detail", "parent": "sales_order"}},
+			so,
+		)
 		item.qty = row.qty
 		item.rate = item.price_list_rate = flt(row.rate * pct / 100, item.precision("rate"))
 		item.discount_percentage = item.discount_amount = 0
