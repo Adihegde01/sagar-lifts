@@ -67,6 +67,15 @@ def make_milestone_invoice(sales_order: str, milestone: int):
 		item.qty = row.qty
 		item.rate = item.price_list_rate = flt(row.rate * pct / 100, item.precision("rate"))
 		item.discount_percentage = item.discount_amount = 0
+	# Rows built by hand don't carry the item defaults the mapper's own pass
+	# filled in (income/expense account, cost centre, description...). Fill
+	# them the way ERPNext does, then fall back to the company defaults.
+	inv.run_method("set_missing_values")
+	company = frappe.get_cached_doc("Company", inv.company)
+	for item in inv.items:
+		item.income_account = item.income_account or company.default_income_account
+		item.expense_account = item.expense_account or company.default_expense_account
+		item.cost_center = item.cost_center or company.cost_center
 	inv.run_method("calculate_taxes_and_totals")
 	return inv
 
