@@ -132,6 +132,7 @@ def sales_order_propagate_outstanding_flag(doc, method=None):
 			filters={
 				"customer": doc.customer,
 				"name": ["!=", doc.name],
+				"docstatus": 1,
 				"deployment_status": ["not in", ("Dismantled", "")],
 				"outstanding_flag": 0,
 			},

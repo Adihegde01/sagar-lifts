@@ -56,3 +56,24 @@ def make_milestone_invoice(sales_order: str, milestone: int):
 		item.discount_percentage = item.discount_amount = 0
 	inv.run_method("calculate_taxes_and_totals")
 	return inv
+
+
+CONFIRM_ORDER_ROLES = ("SL Sales Admin", "SL Billing", "SL Manufacturing", "SL Admin", "System Manager")
+
+
+@frappe.whitelist()
+def confirm_order(sales_order: str):
+	"""Submit a draft Sales Order straight into Active.
+
+	The order workflow has no screen action for submitting a draft (see the
+	Draft state in setup/deployment_workflow.py); this is the same step as a
+	plain Submit, limited to the teams that confirm orders.
+	"""
+	frappe.only_for(CONFIRM_ORDER_ROLES)
+	so = frappe.get_doc("Sales Order", sales_order)
+	so.check_permission("submit")
+	if so.docstatus != 0:
+		frappe.throw(_("{0} is already submitted.").format(so.name))
+	so.deployment_status = "Active"
+	so.submit()
+	return so.name

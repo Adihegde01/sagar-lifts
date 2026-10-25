@@ -20,7 +20,7 @@ NUMBER_CARDS = [
 		"name": "Active Orders",
 		"document_type": "Sales Order",
 		"function": "Count",
-		"filters_json": '[["Sales Order","deployment_status","!=","Dismantled"]]',
+		"filters_json": '[["Sales Order","docstatus","=",1],["Sales Order","deployment_status","!=","Dismantled"]]',
 	},
 	{
 		"name": "Bad Debt Risk",

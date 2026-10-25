@@ -24,6 +24,7 @@ WORKFLOW_NAME = "Sales Order Deployment Lifecycle"
 # Danger/Inverse — there's no "Secondary". Blank (the default muted/grey
 # badge) is the closest match for Dismantled.
 STATE_STYLES = {
+	"Draft": "",
 	"Active": "Primary",
 	"Dispatched": "Info",
 	"Installation": "Warning",
@@ -34,6 +35,13 @@ STATE_STYLES = {
 
 # (state, doc_status, allow_edit role), in spec order.
 STATE_ROLE_ROWS = [
+	# An unsubmitted order sits in Draft (doc_status 0). Without this state the
+	# order opened as "Active" while still a draft and the only action on screen
+	# was "Mark Dispatched" - nobody could submit it.
+	("Draft", "0", "SL Sales Admin"),
+	("Draft", "0", "SL Billing"),
+	("Draft", "0", "SL Manufacturing"),
+	("Draft", "0", "SL Admin"),
 	("Active", "1", "SL Manufacturing"),
 	("Active", "1", "SL Billing"),
 	("Active", "1", "SL Admin"),
@@ -51,6 +59,14 @@ STATE_ROLE_ROWS = [
 
 # (from_state, next_state, action, condition, [roles...])
 TRANSITIONS = [
+	# Submitting the order is this transition (Draft -> Active).
+	(
+		"Draft",
+		"Active",
+		"Confirm Order",
+		"",
+		["SL Sales Admin", "SL Billing", "SL Manufacturing", "SL Admin"],
+	),
 	(
 		"Active",
 		"Dispatched",
@@ -145,3 +161,9 @@ def setup_deployment_workflow():
 			)
 
 	wf.save(ignore_permissions=True)
+
+	# Orders still in draft were saved as "Active" before Draft existed.
+	frappe.db.sql(
+		"update `tabSales Order` set deployment_status = 'Draft' "
+		"where docstatus = 0 and ifnull(deployment_status, '') in ('', 'Active')"
+	)

@@ -683,7 +683,7 @@ CUSTOM_FIELDS = {
 			"fieldname": "deployment_status",
 			"label": "Deployment Status",
 			"fieldtype": "Select",
-			"options": "\nActive\nDispatched\nInstallation\nHanded Over\nAMC\nDismantled",
+			"options": "\nDraft\nActive\nDispatched\nInstallation\nHanded Over\nAMC\nDismantled",
 			"allow_on_submit": 1,
 			"description": "Workflow state field",
 			"insert_after": "sl_deployment_section",
