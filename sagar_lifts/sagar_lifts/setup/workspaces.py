@@ -218,8 +218,9 @@ DESK = {
 	),
 }
 
-# can open every Sagar Lifts workspace and icon
-SEE_ALL_WORKSPACES = ["SL Admin", "System Manager"]
+# can open every Sagar Lifts workspace and icon. SL Admin is not here: admins
+# see only their own "Sagar Lifts" tile (plus any other role they hold).
+SEE_ALL_WORKSPACES = ["System Manager"]
 
 
 def _build_content(shortcuts, cards, charts):

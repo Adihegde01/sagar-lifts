@@ -61,3 +61,4 @@ sagar_lifts.patches.v1_0.sales_module_notifications #2026-10-21 recipients by sa
 sagar_lifts.patches.v1_0.sales_module_reports #2026-10-21 five sales roles
 sagar_lifts.patches.v1_0.workspaces #2026-10-21b desk icons and sidebars, sales workspaces, my tasks
 sagar_lifts.patches.v1_0.role_permissions #2026-10-24 scout report admin section locked to sales admin
+sagar_lifts.patches.v1_0.workspaces #2026-10-24 sl admin sees only its own tile
