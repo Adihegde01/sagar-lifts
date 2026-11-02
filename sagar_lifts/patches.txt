@@ -62,3 +62,6 @@ sagar_lifts.patches.v1_0.sales_module_reports #2026-10-21 five sales roles
 sagar_lifts.patches.v1_0.workspaces #2026-10-21b desk icons and sidebars, sales workspaces, my tasks
 sagar_lifts.patches.v1_0.role_permissions #2026-10-24 scout report admin section locked to sales admin
 sagar_lifts.patches.v1_0.workspaces #2026-10-24 sl admin sees only its own tile
+sagar_lifts.patches.v1_0.sales_order_lift_fields #2026-11-02 drop mast section type/length
+sagar_lifts.patches.v1_0.role_permissions #2026-11-02 purchase receipt (GRN) — had none before
+sagar_lifts.patches.v1_0.workspaces #2026-11-02 purchase receipt (GRN) shortcuts

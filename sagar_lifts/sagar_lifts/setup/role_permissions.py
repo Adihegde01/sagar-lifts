@@ -99,6 +99,13 @@ CORE_DOCTYPE_GRID = {
 		"SL Stores": dict(read=1, write=1, create=1, submit=1),
 		"SL Manufacturing": dict(read=1),
 	},
+	# GRN — had zero Custom DocPerm on any SL role before this (no workspace
+	# shortcut either, see workspaces.py), so nobody could open it at all.
+	"Purchase Receipt": {
+		"SL Admin": dict(read=1, write=1, create=1, delete=1, submit=1, cancel=1),
+		"SL Stores": dict(read=1, write=1, create=1, submit=1),
+		"SL Manufacturing": dict(read=1),
+	},
 	"Sales Order": {
 		"SL Admin": dict(read=1, write=1, create=1, delete=1, submit=1, cancel=1),
 		"SL Management": dict(read=1, write=1),

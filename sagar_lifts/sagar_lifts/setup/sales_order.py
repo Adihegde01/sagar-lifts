@@ -144,22 +144,10 @@ CUSTOM_FIELDS = {
 			"insert_after": "speed",
 		},
 		{
-			"fieldname": "mast_section_type",
-			"label": "Mast Section Type",
-			"fieldtype": "Data",
-			"insert_after": "cabin_finish",
-		},
-		{
-			"fieldname": "mast_section_length",
-			"label": "Mast Section Length (m)",
-			"fieldtype": "Float",
-			"insert_after": "mast_section_type",
-		},
-		{
 			"fieldname": "motor_power_kw",
 			"label": "Motor Power (kW)",
 			"fieldtype": "Float",
-			"insert_after": "mast_section_length",
+			"insert_after": "cabin_finish",
 		},
 		{
 			"fieldname": "cage_configuration",
@@ -1332,7 +1320,6 @@ FIELD_LENGTHS = {
 	"job_number": 30,
 	"landing_door": 50,
 	"lift_status": 50,
-	"mast_section_type": 50,
 	"original_site_name": 100,
 	"re_erection_from_site": 100,
 	"site_address_line_1": 100,
@@ -1352,7 +1339,15 @@ for _field in CUSTOM_FIELDS["Sales Order"]:
 		_field["length"] = FIELD_LENGTHS[_field["fieldname"]]
 
 # Fields dropped from earlier versions of this setup.
-REMOVED_FIELDS = ["milestone_6_name", "milestone_6_percent", "sl_milestones_section", "sl_milestones_col"]
+REMOVED_FIELDS = [
+	"milestone_6_name",
+	"milestone_6_percent",
+	"sl_milestones_section",
+	"sl_milestones_col",
+	# Not used — dropped per client request.
+	"mast_section_type",
+	"mast_section_length",
+]
 
 
 def setup_sales_order_customization():
