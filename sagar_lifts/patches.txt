@@ -65,3 +65,4 @@ sagar_lifts.patches.v1_0.workspaces #2026-10-24 sl admin sees only its own tile
 sagar_lifts.patches.v1_0.sales_order_lift_fields #2026-11-02 drop mast section type/length
 sagar_lifts.patches.v1_0.role_permissions #2026-11-02 purchase receipt (GRN) — had none before
 sagar_lifts.patches.v1_0.workspaces #2026-11-02 purchase receipt (GRN) shortcuts
+sagar_lifts.patches.v1_0.sales_order_lift_fields #2026-11-02b job number/name moved to Details tab
