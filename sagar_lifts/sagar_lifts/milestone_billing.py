@@ -99,3 +99,45 @@ def confirm_order(sales_order: str):
 	so.deployment_status = "Active"
 	so.submit()
 	return so.name
+
+
+MILESTONE_TABLE = """
+<table class="table table-bordered table-condensed" style="margin:0">
+<thead><tr><th>#</th><th>{{ _("Milestone") }}</th><th class="text-right">%</th>
+<th class="text-right">{{ _("Amount") }}</th><th>{{ _("Trigger") }}</th><th>{{ _("Status") }}</th><th>{{ _("Invoices") }}</th></tr></thead>
+<tbody>{% for m in rows %}<tr{% if m.n == current %} style="font-weight:600;background:var(--yellow-highlight-bg, #fff8dd)"{% endif %}>
+<td>{{ m.n }}</td><td>{{ m.name }}</td><td class="text-right">{{ "%g"|format(m.percent) }}</td>
+<td class="text-right">{{ frappe.format(m.amount, {"fieldtype": "Currency"}) }}</td><td>{{ m.trigger or "" }}</td><td>{{ m.status or "Pending" }}</td>
+<td>{% for i in m.invoices %}<a href="/app/sales-invoice/{{ i.name }}">{{ i.name }}</a> ({{ i.status }}){% if not loop.last %}<br>{% endif %}{% else %}—{% endfor %}</td>
+</tr>{% endfor %}</tbody></table>"""
+
+
+@frappe.whitelist()
+def milestone_summary(sales_order: str, current: int | None = None) -> str:
+	"""The order's payment milestones with what is already invoiced against each,
+	shown to whoever raises an invoice (on the Sales Order and the Sales Invoice)."""
+	so = frappe.get_doc("Sales Order", sales_order)
+	so.check_permission("read")
+	invoices = frappe.get_all(
+		"Sales Invoice",
+		filters={"job_id": so.name, "docstatus": ("<", 2), "milestone_number": ("is", "set")},
+		fields=["name", "status", "milestone_number"],
+		order_by="creation",
+	)
+	rows = []
+	for n in MILESTONES:
+		pct = flt(so.get(f"milestone_{n}_percent"))
+		if not (so.get(f"milestone_{n}_name") or pct):
+			continue
+		rows.append(frappe._dict(
+			n=n,
+			name=so.get(f"milestone_{n}_name"),
+			percent=pct,
+			amount=flt(so.grand_total) * pct / 100,
+			trigger=so.get(f"milestone_{n}_trigger_event"),
+			status=so.get(f"milestone_{n}_status"),
+			invoices=[i for i in invoices if i.milestone_number == str(n)],
+		))
+	if not rows:
+		return ""
+	return frappe.render_template(MILESTONE_TABLE, {"rows": rows, "current": frappe.utils.cint(current)})

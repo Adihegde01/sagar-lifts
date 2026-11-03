@@ -35,6 +35,8 @@ USERS = [
 	("sales@sagarlifts.com", "Sales", "SL Admin"),
 	("service@sagarlifts.com", "ranjana", "SL Service Manager"),
 	("stock@sagarlifts.com", "Sanoj", "SL Dispatch"),
+	# Client 2026-11: stock@ also works the Stores module (and makes challans as Dispatch)
+	("stock@sagarlifts.com", "Sanoj", "SL Stores"),
 	("vaishali@sagarlifts.com", "Vaishali", "SL Billing"),
 	("vtrajani@sagarlifts.com", "VT Rajani", "SL Admin"),
 	("himanshu@sagarlifts.com", "himanshu", "SL Management"),

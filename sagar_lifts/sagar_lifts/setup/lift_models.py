@@ -14,14 +14,18 @@ LIFT_MODELS = {
 		("Reinstalling", "Reinstalling", "995466"),
 	],
 	"Fire Evacuation Lift": [],
-	"Construction Cum Fire Lift": [],
+	"Construction Cum Fire Evacuation Lift": [],
+	"Passenger Lift": [],
 	"Car Lift": [],
-	"Permanent Lift": [],
-	"AMC": [],
+	"Goods Lift": [],
 }
 
 # Earlier demo lift items, filed into their category so the filtered dropdown still offers them.
-EXISTING_ITEMS = {"SC200-200": "Construction Lift", "SC300-250": "Construction Lift", "PL1000-8": "Permanent Lift"}
+EXISTING_ITEMS = {"SC200-200": "Construction Lift", "SC300-250": "Construction Lift", "PL1000-8": "Passenger Lift"}
+
+# Categories from the first list (2026-10) that the client's revised list renamed or dropped.
+RENAMED = {"Construction Cum Fire Lift": "Construction Cum Fire Evacuation Lift"}
+DROPPED = ["Permanent Lift", "AMC"]
 
 
 def _item_group(name, parent, is_group=0):
@@ -31,6 +35,9 @@ def _item_group(name, parent, is_group=0):
 
 def setup_lift_models():
 	_item_group(ROOT, "All Item Groups", is_group=1)
+	for old, new in RENAMED.items():
+		if frappe.db.exists("Item Group", old) and not frappe.db.exists("Item Group", new):
+			frappe.rename_doc("Item Group", old, new, force=True)
 	for category, items in LIFT_MODELS.items():
 		_item_group(category, ROOT)
 		for code, item_name, hsn in items:
@@ -52,3 +59,7 @@ def setup_lift_models():
 	for code, category in EXISTING_ITEMS.items():
 		if frappe.db.exists("Item", code):
 			frappe.db.set_value("Item", code, "item_group", category)
+	for name in DROPPED:
+		# only once nothing is filed under it any more
+		if frappe.db.exists("Item Group", name) and not frappe.db.exists("Item", {"item_group": name}):
+			frappe.delete_doc("Item Group", name, ignore_permissions=True)

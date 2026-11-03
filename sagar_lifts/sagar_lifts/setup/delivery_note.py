@@ -25,12 +25,21 @@ CUSTOM_FIELDS = {
 			"insert_after": "sl_challan_section",
 		},
 		{
+			# Picking one fills the challan's items from it (public/js/delivery_note.js)
+			"fieldname": "material_request",
+			"label": "Material Request",
+			"fieldtype": "Link",
+			"options": "Material Request",
+			"link_filters": '[["Material Request","docstatus","=",1],["Material Request","status","not in",["Stopped","Cancelled"]]]',
+			"insert_after": "challan_type",
+		},
+		{
 			"fieldname": "developer_name",
 			"label": "Developer Name",
 			"fieldtype": "Data",
 			"fetch_from": "job_id.developer_name",
 			"fetch_if_empty": 1,
-			"insert_after": "challan_type",
+			"insert_after": "material_request",
 		},
 		{
 			"fieldname": "site_name",
@@ -390,4 +399,9 @@ def setup_delivery_note_customization():
 	# Note's own native field of that name and was replaced by sl_driver_name.
 	frappe.db.delete("Custom Field", {"dt": "Delivery Note", "fieldname": "driver_name"})
 	create_custom_fields(CUSTOM_FIELDS, ignore_validate=True)
+	# E-Way Bill straight from the challan (India Compliance). Generating one
+	# still needs the India Compliance API account and the e-Waybill login in
+	# GST Settings, which only Sagar Lifts can enter.
+	if frappe.db.exists("DocType", "GST Settings"):
+		frappe.db.set_single_value("GST Settings", {"enable_e_waybill": 1, "enable_e_waybill_from_dn": 1})
 	frappe.clear_cache(doctype="Delivery Note")

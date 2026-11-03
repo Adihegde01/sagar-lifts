@@ -69,3 +69,10 @@ sagar_lifts.patches.v1_0.sales_order_lift_fields #2026-11-02 drop mast section t
 sagar_lifts.patches.v1_0.role_permissions #2026-11-02 purchase receipt (GRN) — had none before
 sagar_lifts.patches.v1_0.workspaces #2026-11-02 purchase receipt (GRN) shortcuts
 sagar_lifts.patches.v1_0.sales_order_lift_fields #2026-11-02b job number/name moved to Details tab
+sagar_lifts.patches.v1_0.lift_models #2026-11-03 passenger, goods, construction cum fire evacuation
+sagar_lifts.patches.v1_0.warehouses #2026-11-03 bhiwandi and andheri office godowns
+sagar_lifts.patches.v1_0.sales_order_lift_fields #2026-11-03 no mast, documents, job bom, reinstalling old job
+sagar_lifts.patches.v1_0.delivery_note_challan_fields #2026-11-03 material request, e-way bill from challan
+sagar_lifts.patches.v1_0.job_id_links #2026-11-03 job id on bom
+sagar_lifts.patches.v1_0.role_permissions #2026-11-03 customer makers, bom, material request, e-waybill log
+sagar_lifts.patches.v1_0.import_users #2026-11-03 stock@ gets stores

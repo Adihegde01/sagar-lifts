@@ -65,6 +65,11 @@ CORE_DOCTYPE_GRID = {
 		# only person who can generate a Quotation." SL Sales gets read-only.
 		"SL Sales": dict(read=1),
 	},
+	# The Purchase Order form needs the company address ("Sagar Lifts-Billing");
+	# without read on Address the PO can't be filled in by anyone but Administrator.
+	"Address": {
+		"SL Admin": dict(read=1),
+	},
 	# Billing records the money received against each PI (Advance, On Delivery,
 	# Handover, AMC) and raises the Tax Invoice after it. No SL role could
 	# create one before this.
@@ -139,6 +144,21 @@ CORE_DOCTYPE_GRID = {
 		"SL Dispatch": dict(read=1, write=1, submit=1),
 		"SL Service Manager": dict(read=1),
 	},
+	# Every job gets its own BOM (doc_events.sales_order_create_job_bom);
+	# Manufacturing (Rakesh) fills it in and submits it.
+	"BOM": {
+		"SL Admin": dict(read=1, write=1, create=1, delete=1, submit=1, cancel=1),
+		"SL Manufacturing": dict(read=1, write=1, create=1, submit=1, cancel=1),
+		"SL Stores": dict(read=1),
+		"SL Management": dict(read=1),
+	},
+	# The challan is made from a Material Request picked by name.
+	"Material Request": {
+		"SL Admin": dict(read=1, write=1, create=1, delete=1, submit=1, cancel=1),
+		"SL Stores": dict(read=1),
+		"SL Dispatch": dict(read=1),
+		"SL Manufacturing": dict(read=1),
+	},
 	"Delivery Note": {
 		"SL Admin": dict(read=1, write=1, create=1, delete=1, submit=1, cancel=1),
 		# Not in the guide's own grid (Section 5 flags this) — added Read-only
@@ -150,6 +170,14 @@ CORE_DOCTYPE_GRID = {
 		"SL Stores": dict(read=1, write=1, create=1),
 		"SL Dispatch": dict(read=1, write=1, create=1, submit=1),
 		"SL Service Manager": dict(read=1),
+	},
+	# India Compliance's log of every E-Way Bill; generating one from a challan
+	# needs submit on the challan, printing one needs print here.
+	"e-Waybill Log": {
+		"SL Admin": dict(read=1, write=1, create=1),
+		"SL Dispatch": dict(read=1, write=1, create=1),
+		"SL Stores": dict(read=1),
+		"SL Billing": dict(read=1),
 	},
 	"Sales Invoice": {
 		"SL Admin": dict(read=1, write=1, create=1, delete=1, submit=1, cancel=1),
@@ -215,12 +243,16 @@ ALL_SL_ROLES = [
 # SL Collection Lead's "own developer accounts only" narrows this via a
 # separate per-user User Permission on Customer (Phase 1) — that restricts
 # rows, it doesn't need write here at all.
+CUSTOMER_MAKERS = ["SL Sales Admin", "SL Billing", "SL Manufacturing"]
+
 BASELINE_MASTER_GRID = {
 	# Sales Admin turns the Lead into a Customer when making the Sales Order
-	"Customer": {role: dict(read=1) for role in ALL_SL_ROLES} | {"SL Sales Admin": dict(read=1, write=1, create=1)},
+	# Client 2026-11: Rakesh (Manufacturing) and Accounts/Vaishali (Billing) also
+	# open new Customers when they book a Sales Order.
+	"Customer": {role: dict(read=1) for role in ALL_SL_ROLES} | {role: dict(read=1, write=1, create=1) for role in CUSTOMER_MAKERS},
 	# ...and ERPNext writes the Lead's contact and address onto that Customer
-	"Contact": {"SL Sales Admin": dict(read=1, write=1, create=1)},
-	"Address": {"SL Sales Admin": dict(read=1, write=1, create=1)},
+	"Contact": {role: dict(read=1, write=1, create=1) for role in CUSTOMER_MAKERS},
+	"Address": {role: dict(read=1, write=1, create=1) for role in CUSTOMER_MAKERS},
 	"Item": {role: dict(read=1) for role in ALL_SL_ROLES},
 	# Also needed to create/save any selling document at all — ERPNext
 	# resolves the customer's receivable account (party_account_currency)

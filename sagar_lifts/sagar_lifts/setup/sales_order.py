@@ -8,6 +8,8 @@ install / migrate.
 import frappe
 from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 
+REINSTALL = 'eval:doc.lift_type=="Re-erection" || doc.lift_model=="Reinstalling"'
+
 CUSTOM_FIELDS = {
 	"Sales Order": [
 		# --- Job Reference (Details tab, right under Customer) -----------------
@@ -105,12 +107,22 @@ CUSTOM_FIELDS = {
 			"description": "e.g. 1.5m × 1.3m",
 			"insert_after": "capacity_kg",
 		},
+		{
+			"fieldname": "job_bom",
+			"label": "Job BOM",
+			"fieldtype": "Link",
+			"options": "BOM",
+			"read_only": 1,
+			"allow_on_submit": 1,
+			"description": "This job's own Bill of Materials, made when the order is confirmed",
+			"insert_after": "cabin_size",
+		},
 		# --- Lift Specifications -----------------------------------------------
 		{
 			"fieldname": "sl_lift_specs_section",
 			"label": "Lift Specifications",
 			"fieldtype": "Section Break",
-			"insert_after": "cabin_size",
+			"insert_after": "job_bom",
 		},
 		{
 			"fieldname": "lift_serial_number",
@@ -232,6 +244,48 @@ CUSTOM_FIELDS = {
 			"fieldtype": "Small Text",
 			"insert_after": "gad_signed",
 		},
+		# --- Documents ----------------------------------------------------------
+		# The order's paperwork, uploadable any time, also after the order is
+		# confirmed. Anything else goes in the sidebar's Attachments.
+		{
+			"fieldname": "sl_documents_section",
+			"label": "Documents",
+			"fieldtype": "Section Break",
+			"insert_after": "special_specifications",
+		},
+		{
+			"fieldname": "client_po_document",
+			"label": "Client Work Order / PO",
+			"fieldtype": "Attach",
+			"allow_on_submit": 1,
+			"insert_after": "sl_documents_section",
+		},
+		{
+			"fieldname": "gad_document",
+			"label": "GAD Drawing",
+			"fieldtype": "Attach",
+			"allow_on_submit": 1,
+			"insert_after": "client_po_document",
+		},
+		{
+			"fieldname": "sl_documents_col",
+			"fieldtype": "Column Break",
+			"insert_after": "gad_document",
+		},
+		{
+			"fieldname": "license_document",
+			"label": "License Document",
+			"fieldtype": "Attach",
+			"allow_on_submit": 1,
+			"insert_after": "sl_documents_col",
+		},
+		{
+			"fieldname": "other_document",
+			"label": "Other Document",
+			"fieldtype": "Attach",
+			"allow_on_submit": 1,
+			"insert_after": "license_document",
+		},
 		# --- Site & Developer Details ------------------------------------------
 		# Developer = the Customer; name/number/email/GSTIN auto-fill from it
 		# but stay editable per order.
@@ -239,7 +293,7 @@ CUSTOM_FIELDS = {
 			"fieldname": "sl_site_developer_section",
 			"label": "Site and Developer Details",
 			"fieldtype": "Section Break",
-			"insert_after": "special_specifications",
+			"insert_after": "other_document",
 		},
 		{
 			"fieldname": "developer_name",
@@ -1142,20 +1196,32 @@ CUSTOM_FIELDS = {
 			"insert_after": "contractor_labour_bills_percent",
 		},
 		# --- Re-erection Reference ---------------------------------------------
+		# A Re-erection, or a Reinstalling order, is the same lift going up
+		# again: it must point at the old job it came from.
 		{
 			"fieldname": "sl_re_erection_section",
-			"label": "Re-erection Reference",
+			"label": "Re-erection / Reinstalling Reference",
 			"fieldtype": "Section Break",
-			"depends_on": 'eval:doc.lift_type=="Re-erection"',
+			"depends_on": REINSTALL,
 			"insert_after": "contractor_labour_bills_amount",
 		},
 		{
 			"fieldname": "original_order_reference",
-			"label": "Original Order Reference",
+			"label": "Old Job (Sales Order)",
 			"fieldtype": "Link",
 			"options": "Sales Order",
 			"length": 40,
+			"mandatory_depends_on": REINSTALL,
+			"link_filters": '[["Sales Order","docstatus","=",1]]',
 			"insert_after": "sl_re_erection_section",
+		},
+		{
+			"fieldname": "original_job_number",
+			"label": "Old Job Number",
+			"fieldtype": "Data",
+			"read_only": 1,
+			"fetch_from": "original_order_reference.job_number",
+			"insert_after": "original_order_reference",
 		},
 		{
 			"fieldname": "original_site_name",
@@ -1164,7 +1230,7 @@ CUSTOM_FIELDS = {
 			"length": 100,
 			"fetch_from": "original_order_reference.site_name",
 			"fetch_if_empty": 1,
-			"insert_after": "original_order_reference",
+			"insert_after": "original_job_number",
 		},
 		{
 			"fieldname": "original_handover_date",
@@ -1338,6 +1404,7 @@ FIELD_LENGTHS = {
 	"job_number": 30,
 	"landing_door": 50,
 	"lift_status": 50,
+	"original_job_number": 30,
 	"original_site_name": 100,
 	"re_erection_from_site": 100,
 	"site_address_line_1": 100,

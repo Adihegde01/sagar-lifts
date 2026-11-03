@@ -44,7 +44,12 @@ app_license = "mit"
 
 # include js in doctype views
 # doctype_js = {"doctype" : "public/js/doctype.js"}
-doctype_js = {"Lead": "public/js/lead.js", "Sales Order": "public/js/sales_order.js"}
+doctype_js = {
+	"Lead": "public/js/lead.js",
+	"Sales Order": "public/js/sales_order.js",
+	"Sales Invoice": "public/js/sales_invoice.js",
+	"Delivery Note": "public/js/delivery_note.js",
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -284,6 +289,10 @@ doc_events = {
 	},
 	"Delivery Note": {
 		"validate": "sagar_lifts.sagar_lifts.doc_events.validate_conditional_mandatory",
+	},
+	# a closed job step assigns the next one (stage-by-stage notifications)
+	"Task": {
+		"on_update": "sagar_lifts.sagar_lifts.doc_events.task_assign_next_steps",
 	},
 }
 

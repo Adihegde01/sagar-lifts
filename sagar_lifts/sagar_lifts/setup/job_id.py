@@ -57,6 +57,8 @@ CUSTOM_FIELDS = {
 	# job_id/job_number/job_name — see setup/maintenance_visit.py,
 	# setup/purchase_invoice.py and setup/sales_invoice.py
 	"Contract": [_job_id_field("party_full_name")],
+	# each job's own BOM (doc_events.sales_order_create_bom_skeleton)
+	"BOM": [_job_id_field("project")],
 }
 
 

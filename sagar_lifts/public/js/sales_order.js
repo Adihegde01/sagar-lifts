@@ -4,7 +4,21 @@
 const SL_CONFIRM_ROLES = ["SL Sales Admin", "SL Billing", "SL Manufacturing", "SL Admin", "System Manager"];
 
 frappe.ui.form.on("Sales Order", {
+	onload(frm) {
+		// show the Job Number this order will get as soon as the form opens
+		if (frm.is_new() && !frm.doc.job_number && !frm.doc.amended_from && frm.doc.naming_series) {
+			frappe
+				.call("sagar_lifts.sagar_lifts.doc_events.next_job_number", { naming_series: frm.doc.naming_series })
+				.then(({ message }) => message && !frm.doc.job_number && frm.set_value("job_number", message));
+		}
+	},
 	refresh(frm) {
+		if (frm.doc.docstatus === 1) {
+			frappe
+				.call("sagar_lifts.sagar_lifts.milestone_billing.milestone_summary", { sales_order: frm.doc.name })
+				.then(({ message }) => message && frm.dashboard.add_section(message, __("Payment Milestones")));
+		}
+
 		// A saved draft order has no Submit on screen (workflow quirk), so give
 		// the teams that confirm orders one. Once the Draft state is in place
 		// the workflow's own "Confirm Order" button takes over and this hides.

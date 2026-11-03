@@ -38,10 +38,36 @@ def validate_conditional_mandatory(doc, method=None):
 
 
 def sales_order_set_job_number(doc, method=None):
-	# Default Job Number to the Sales Order's own name (JOB-.####.) but leave it
-	# editable — only fill when blank. autoname has already run by validate.
-	if not doc.job_number and doc.name:
+	# Default Job Number to the Sales Order's own name but leave it editable —
+	# only fill when blank. autoname has already run by validate. A new order's
+	# form already shows the expected next number (next_job_number); if someone
+	# else saved an order first, that guess is stale, so a new order always
+	# takes its real name unless the number was typed in by hand.
+	if not doc.name:
+		return
+	# An amended order keeps its job's number.
+	auto = doc.is_new() and not doc.amended_from and (doc.job_number or "").startswith(_series_prefix(doc.naming_series))
+	if not doc.job_number or auto:
 		doc.job_number = doc.name
+
+
+def _series_prefix(series):
+	# "SAL-ORD-.YYYY.-" -> "SAL-ORD-"
+	return (series or "").split(".")[0] or "\0"
+
+
+@frappe.whitelist()
+def next_job_number(naming_series: str) -> str:
+	"""The Job Number the next Sales Order in this series will get, without using it up."""
+	from frappe.model.naming import NamingSeries, parse_naming_series
+
+	frappe.has_permission("Sales Order", "create", throw=True)
+
+	def peek(prefix, digits):
+		current = frappe.db.sql("select current from tabSeries where name = %s", prefix)
+		return str(cint(current[0][0] if current else 0) + 1).zfill(digits)
+
+	return parse_naming_series(NamingSeries(naming_series).series, number_generator=peek)
 
 
 def sales_order_validate_contract_value(doc, method=None):
@@ -143,30 +169,34 @@ def sales_order_propagate_outstanding_flag(doc, method=None):
 
 
 # One Task per step of the job, in lifecycle order, with the role that does it
-# (deployment workflow + Sales Module guide Section 10). Each task is assigned
+# (deployment workflow + Sales Module guide Section 10) and the step it waits
+# for. All tasks are created when the order is confirmed, but a task is only
+# assigned (and its people notified) once the step before it is completed —
+# client 2026-11: notifications by stage, not all at once. A task is assigned
 # to every active user holding that role; "collection_lead" means the order's
-# own Collection Lead. The first seven are the production stages (No-Code
-# Guide Section 3.1).
+# own Collection Lead. Design to Ready for Dispatch are the production stages
+# (No-Code Guide Section 3.1).
 PROJECT_TASKS = [
-	("Raise Advance PI", "SL Billing"),
-	("Create Incentive Record", "SL Sales Admin"),
-	("Design & BOM", "SL Manufacturing"),
-	("Procure components (Purchase Orders)", "SL Stores"),
-	("Frame Fabrication", "SL Manufacturing"),
-	("Cage Assembly", "SL Manufacturing"),
-	("Electrical", "SL Manufacturing"),
-	("Testing", "SL Manufacturing"),
-	("QC Check", "SL Manufacturing"),
-	("Ready for Dispatch", "SL Manufacturing"),
-	("Dispatch: challan, vehicle and E-Way Bill", "SL Dispatch"),
-	("Raise On Delivery PI", "SL Billing"),
-	("Collect signed challan from site", "SL Dispatch"),
-	("Installation and erection", "SL Manufacturing"),
-	("Handover checklist and handover", "SL Manufacturing"),
-	("Raise Handover PI", "SL Billing"),
-	("Create Maintenance Schedule (PM visits)", "SL Service Manager"),
-	("Payment follow-up with developer", "collection_lead"),
+	("Raise Advance PI", "SL Billing", None),
+	("Create Incentive Record", "SL Sales Admin", None),
+	("Design & BOM", "SL Manufacturing", None),
+	("Procure components (Purchase Orders)", "SL Stores", "Design & BOM"),
+	("Frame Fabrication", "SL Manufacturing", "Procure components (Purchase Orders)"),
+	("Cage Assembly", "SL Manufacturing", "Frame Fabrication"),
+	("Electrical", "SL Manufacturing", "Cage Assembly"),
+	("Testing", "SL Manufacturing", "Electrical"),
+	("QC Check", "SL Manufacturing", "Testing"),
+	("Ready for Dispatch", "SL Manufacturing", "QC Check"),
+	("Dispatch: challan, vehicle and E-Way Bill", "SL Dispatch", "Ready for Dispatch"),
+	("Raise On Delivery PI", "SL Billing", "Dispatch: challan, vehicle and E-Way Bill"),
+	("Collect signed challan from site", "SL Dispatch", "Dispatch: challan, vehicle and E-Way Bill"),
+	("Installation and erection", "SL Manufacturing", "Dispatch: challan, vehicle and E-Way Bill"),
+	("Handover checklist and handover", "SL Manufacturing", "Installation and erection"),
+	("Raise Handover PI", "SL Billing", "Handover checklist and handover"),
+	("Create Maintenance Schedule (PM visits)", "SL Service Manager", "Handover checklist and handover"),
+	("Payment follow-up with developer", "collection_lead", "Raise Advance PI"),
 ]
+TASK_DONE = ("Completed", "Cancelled")
 
 
 
@@ -179,30 +209,52 @@ def task_assignees(order, role):
 
 
 def create_project_tasks(order, project):
-	from frappe.desk.form.assign_to import _add as assign
-	from frappe.share import add_docshare
-
-	for subject, role in PROJECT_TASKS:
+	for subject, role, after in PROJECT_TASKS:
 		task = frappe.get_doc(
 			{"doctype": "Task", "project": project, "subject": subject, "status": "Open",
 			 "description": f"{order.job_name or order.name}: {subject}"}
 		).insert(ignore_permissions=True)
-		users = task_assignees(order, role)
-		for user in users:
-			# Assigning shares the Task with anyone who can't already see it, and
-			# Frappe checks the *logged-in* user's share right for that — which
-			# Sales Admin/Billing/Manufacturing don't have on Task, so confirming
-			# an order failed for everyone but Administrator. Share it here with
-			# the share check skipped; write so the assignee can close the task.
-			if not frappe.has_permission("Task", doc=task, user=user):
-				add_docshare(
-					"Task", task.name, user=user, read=1, write=1, flags={"ignore_share_permission": True}
-				)
-		if users:
-			assign(
-				{"assign_to": users, "doctype": "Task", "name": task.name, "description": task.description},
-				ignore_permissions=True,
-			)
+		if not after:
+			assign_task(order, task, role)
+
+
+def assign_task(order, task, role):
+	from frappe.desk.form.assign_to import _add as assign
+	from frappe.share import add_docshare
+
+	users = task_assignees(order, role)
+	for user in users:
+		# Assigning shares the Task with anyone who can't already see it, and
+		# Frappe checks the *logged-in* user's share right for that — which
+		# Sales Admin/Billing/Manufacturing don't have on Task, so confirming
+		# an order failed for everyone but Administrator. Share it here with
+		# the share check skipped; write so the assignee can close the task.
+		if not frappe.has_permission("Task", doc=task, user=user):
+			add_docshare("Task", task.name, user=user, read=1, write=1, flags={"ignore_share_permission": True})
+	if users:
+		assign(
+			{"assign_to": users, "doctype": "Task", "name": task.name, "description": task.description},
+			ignore_permissions=True,
+		)
+
+
+def task_assign_next_steps(doc, method=None):
+	# A job step was closed: hand the steps waiting on it to their people.
+	if not doc.project or doc.status not in TASK_DONE or not doc.has_value_changed("status"):
+		return
+	sales_order = frappe.db.get_value("Project", doc.project, "sales_order")
+	if not sales_order:
+		return
+	order = frappe.get_doc("Sales Order", sales_order)
+	for subject, role, after in PROJECT_TASKS:
+		if after != doc.subject:
+			continue
+		for name in frappe.get_all(
+			"Task", {"project": doc.project, "subject": subject, "status": ("not in", TASK_DONE)}, pluck="name"
+		):
+			task = frappe.get_doc("Task", name)
+			if not task.get("_assign") or task._assign == "[]":
+				assign_task(order, task, role)
 
 
 def sales_order_create_project(doc, method=None):
@@ -236,34 +288,39 @@ def sales_order_create_project(doc, method=None):
 	frappe.db.set_value("Sales Order", doc.name, "project", project.name)
 
 
+BOM_LIFT_TYPES = ("Construction", "Permanent")
+
+
 def sales_order_create_bom_skeleton(doc, method=None):
-	# New Install only (No-Code Guide 2.4: production order is for New Install
-	# only). One BOM per lift model, not per order — orders reusing a model
-	# share it, so this only creates one the first time that model is built.
-	# BOM.items is a mandatory table, so a components-not-decided-yet shell
-	# needs ignore_mandatory to save at all; stays in Draft for someone to
-	# fill in and submit once the actual bill of materials is known.
-	if doc.lift_type != "Construction" or not doc.lift_model:
+	# Every lift that gets built has its own BOM, linked to its job (client
+	# 2026-11) — two orders for the same model can need different parts. It
+	# starts as a Draft copy of the model's default BOM when there is one, so
+	# Manufacturing edits it for this job and submits it.
+	if doc.lift_type not in BOM_LIFT_TYPES or not doc.lift_model:
 		return
-	if frappe.db.exists("BOM", {"item": doc.lift_model}):
+	if frappe.db.exists("BOM", {"job_id": doc.name, "docstatus": ("<", 2)}):
 		return
 
-	bom = frappe.get_doc(
-		{
-			"doctype": "BOM",
-			"item": doc.lift_model,
-			"quantity": 1,
-			"company": doc.company,
-		}
-	)
-	# Two independent checks both reject an empty items table: the generic
-	# framework mandatory-table check (_validate_mandatory, runs regardless
-	# of the controller), and BOM's own controller validate() which
-	# hard-throws "Raw Materials cannot be blank." Both need bypassing to
-	# save a truly-empty shell; this BOM is not production-usable until
-	# someone adds items and submits it themselves.
-	bom.flags.ignore_validate = True
-	bom.insert(ignore_permissions=True, ignore_mandatory=True)
+	template = frappe.db.get_value("BOM", {"item": doc.lift_model, "is_default": 1, "docstatus": 1})
+	if template:
+		bom = frappe.copy_doc(frappe.get_doc("BOM", template))
+		bom.docstatus = 0
+	else:
+		bom = frappe.get_doc({"doctype": "BOM", "item": doc.lift_model, "quantity": 1, "company": doc.company})
+	bom.update({"is_default": 0, "is_active": 1, "job_id": doc.name,
+	            "project": frappe.db.get_value("Sales Order", doc.name, "project")})
+	if template:
+		bom.insert(ignore_permissions=True)
+	else:
+		# Two independent checks both reject an empty items table: the generic
+		# framework mandatory-table check (_validate_mandatory, runs regardless
+		# of the controller), and BOM's own controller validate() which
+		# hard-throws "Raw Materials cannot be blank." Both need bypassing to
+		# save a truly-empty shell; this BOM is not production-usable until
+		# someone adds items and submits it themselves.
+		bom.flags.ignore_validate = True
+		bom.insert(ignore_permissions=True, ignore_mandatory=True)
+	frappe.db.set_value("Sales Order", doc.name, "job_bom", bom.name)
 
 
 def sales_order_set_amc_start_date(doc, method=None):
