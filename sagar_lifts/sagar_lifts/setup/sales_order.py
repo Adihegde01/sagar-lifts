@@ -10,6 +10,41 @@ from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 
 CUSTOM_FIELDS = {
 	"Sales Order": [
+		# --- Job Reference (Details tab, right under Customer) -----------------
+		# Was the first two fields of the Lift Order tab — moved here because
+		# nobody saw them by default (client feedback: "New Job number is not
+		# showing up by default"). The fields themselves were never broken —
+		# job_number does auto-fill to the order's own name on first save
+		# (doc_events.sales_order_set_job_number) — they were just one tab away
+		# from where people actually look.
+		{
+			"fieldname": "sl_job_reference_section",
+			"label": "Job Reference",
+			"fieldtype": "Section Break",
+			"insert_after": "amended_from",
+		},
+		{
+			"fieldname": "job_number",
+			"label": "Job Number",
+			"fieldtype": "Data",
+			"read_only": 0,
+			"allow_on_submit": 1,
+			"description": "Defaults to the auto-assigned Job Number — the identifier that travels with this deployment for its whole life",
+			"insert_after": "sl_job_reference_section",
+		},
+		{
+			"fieldname": "sl_job_reference_col",
+			"fieldtype": "Column Break",
+			"insert_after": "job_number",
+		},
+		{
+			"fieldname": "job_name",
+			"label": "Job Name",
+			"fieldtype": "Data",
+			"reqd": 1,
+			"description": 'e.g. "ABC Constructions — Bangalore — SC200/200"',
+			"insert_after": "sl_job_reference_col",
+		},
 		# --- Lift Order tab ---------------------------------------------------
 		{
 			"fieldname": "sl_lift_order_tab",
@@ -25,29 +60,12 @@ CUSTOM_FIELDS = {
 			"insert_after": "sl_lift_order_tab",
 		},
 		{
-			"fieldname": "job_number",
-			"label": "Job Number",
-			"fieldtype": "Data",
-			"read_only": 0,
-			"allow_on_submit": 1,
-			"description": "Defaults to the auto-assigned Job Number — the identifier that travels with this deployment for its whole life",
-			"insert_after": "sl_lift_details_section",
-		},
-		{
-			"fieldname": "job_name",
-			"label": "Job Name",
-			"fieldtype": "Data",
-			"reqd": 1,
-			"description": 'e.g. "ABC Constructions — Bangalore — SC200/200"',
-			"insert_after": "job_number",
-		},
-		{
 			"fieldname": "lift_type",
 			"label": "Lift Type",
 			"fieldtype": "Select",
 			"options": "Construction\nPermanent\nRe-erection\nDismantling",
 			"reqd": 1,
-			"insert_after": "job_name",
+			"insert_after": "sl_lift_details_section",
 		},
 		{
 			"fieldname": "lift_model",
@@ -144,22 +162,10 @@ CUSTOM_FIELDS = {
 			"insert_after": "speed",
 		},
 		{
-			"fieldname": "mast_section_type",
-			"label": "Mast Section Type",
-			"fieldtype": "Data",
-			"insert_after": "cabin_finish",
-		},
-		{
-			"fieldname": "mast_section_length",
-			"label": "Mast Section Length (m)",
-			"fieldtype": "Float",
-			"insert_after": "mast_section_type",
-		},
-		{
 			"fieldname": "motor_power_kw",
 			"label": "Motor Power (kW)",
 			"fieldtype": "Float",
-			"insert_after": "mast_section_length",
+			"insert_after": "cabin_finish",
 		},
 		{
 			"fieldname": "cage_configuration",
@@ -1332,7 +1338,6 @@ FIELD_LENGTHS = {
 	"job_number": 30,
 	"landing_door": 50,
 	"lift_status": 50,
-	"mast_section_type": 50,
 	"original_site_name": 100,
 	"re_erection_from_site": 100,
 	"site_address_line_1": 100,
@@ -1352,7 +1357,15 @@ for _field in CUSTOM_FIELDS["Sales Order"]:
 		_field["length"] = FIELD_LENGTHS[_field["fieldname"]]
 
 # Fields dropped from earlier versions of this setup.
-REMOVED_FIELDS = ["milestone_6_name", "milestone_6_percent", "sl_milestones_section", "sl_milestones_col"]
+REMOVED_FIELDS = [
+	"milestone_6_name",
+	"milestone_6_percent",
+	"sl_milestones_section",
+	"sl_milestones_col",
+	# Not used — dropped per client request.
+	"mast_section_type",
+	"mast_section_length",
+]
 
 
 def setup_sales_order_customization():

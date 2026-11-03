@@ -30,6 +30,7 @@ WORKSPACES = {
 			("Delivery Note", "Delivery Notes"),
 			("Sales Invoice", "Sales Invoices"),
 			("Purchase Order", "Purchase Orders"),
+			("Purchase Receipt", "Purchase Receipts (GRN)"),
 			("Maintenance Visit", "Maintenance Visits"),
 		],
 		["Total Outstanding", "Active Orders", "Bad Debt Risk", "PM Overdue This Month"],
@@ -42,6 +43,7 @@ WORKSPACES = {
 			("Delivery Note", "Delivery Notes"),
 			("Sales Invoice", "Sales Invoices"),
 			("Purchase Order", "Purchase Orders"),
+			("Purchase Receipt", "Purchase Receipts (GRN)"),
 			("Maintenance Visit", "Maintenance Visits"),
 		],
 		["Total Outstanding", "Active Orders", "Bad Debt Risk", "PM Overdue This Month"],
@@ -83,6 +85,7 @@ WORKSPACES = {
 		"Sagar Lifts - Stores",
 		[
 			("Purchase Order", "Purchase Orders"),
+			("Purchase Receipt", "Purchase Receipts (GRN)"),
 			("Material Request", "Material Requests"),
 			("Delivery Note", "Delivery Notes"),
 			("Item", "Items"),
