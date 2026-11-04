@@ -76,3 +76,4 @@ sagar_lifts.patches.v1_0.delivery_note_challan_fields #2026-11-03 material reque
 sagar_lifts.patches.v1_0.job_id_links #2026-11-03 job id on bom
 sagar_lifts.patches.v1_0.role_permissions #2026-11-03 customer makers, bom, material request, e-waybill log
 sagar_lifts.patches.v1_0.import_users #2026-11-03 stock@ gets stores
+sagar_lifts.patches.v1_0.photos #2026-11-03 photos tab on challan, PO, GRN, invoice

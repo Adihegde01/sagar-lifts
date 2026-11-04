@@ -109,6 +109,7 @@ after_install = [
 	"sagar_lifts.sagar_lifts.setup.stock_entry.setup_stock_entry_customization",
 	"sagar_lifts.sagar_lifts.setup.deployment_workflow.setup_deployment_workflow",
 	"sagar_lifts.sagar_lifts.setup.po_approval_workflow.setup_po_approval_workflow",
+	"sagar_lifts.sagar_lifts.setup.photos.setup_photos",
 	"sagar_lifts.sagar_lifts.setup.role_permissions.setup_role_permissions",
 	"sagar_lifts.sagar_lifts.setup.naming_series.setup_naming_series",
 	"sagar_lifts.sagar_lifts.setup.print_formats.setup_print_formats",
